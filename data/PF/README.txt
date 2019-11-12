@@ -1,1 +1,1 @@
-This is a directory of PF (the SNS-based People Flow Data).
+This is a directory of PF (SNS-based people flow data).

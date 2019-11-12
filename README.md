@@ -5,18 +5,16 @@ PPMTF is implemented with C++. Data preprocessing is implemented with Python. Th
 
 # Directory Structure
 - cpp/
-  - cpp codes.
+  - cpp codes (put the required files under this directory; see README.txt).
 - data/
   - Data of PF/FS (output by running codes).
-- include/
-  - include files (put the required files under this directory; see README.txt).
 - python/
   - python codes.
 
 # Usage
 **(1) Install**
 
-Install Eigen 3.3.7, Generalized Constant Expression Math, and StatsLib (see include/README.txt).
+Install Eigen 3.3.7, Generalized Constant Expression Math, and StatsLib (see cpp/README.txt).
 
 Install PPMTF (C++) as follows.
 ```bash
