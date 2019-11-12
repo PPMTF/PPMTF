@@ -10,12 +10,6 @@ import sys
 #sys.argv = ["Read_FS.py", "../dataset_WWW2019/", "JK"]
 #sys.argv = ["Read_FS.py", "../dataset_WWW2019/", "KL"]
 #sys.argv = ["Read_FS.py", "../dataset_WWW2019/", "SP"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "IS"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "NY"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "TK"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "JK"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "KL"]
-#sys.argv = ["Read_FS.py", "C:/work/Dataset/Foursquare/dataset_WWW2019/", "SP"]
 
 if len(sys.argv) < 3:
     print("Usage:",sys.argv[0],"[FSDir (in)] [City]")

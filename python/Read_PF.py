@@ -6,7 +6,6 @@ import sys
 
 ################################# Parameters ##################################
 #sys.argv = ["Read_PF.py", "../20140808_snsbasedPeopleFlowData_nightley/", "TK"]
-#sys.argv = ["Read_PF.py", "C:/work/Dataset/PeopleFlowData_nightley/20140808_snsbasedPeopleFlowData_nightley/20140808_snsbasedPeopleFlowData_nightley/", "TK"]
 
 if len(sys.argv) < 3:
     print("Usage:",sys.argv[0],"[PFDir (in)] [City]")

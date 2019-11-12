@@ -1,0 +1,16 @@
+PPMTF: A source code of PPMTF (Privacy-Preserving Multiple Tensor Factorization)
+Copyright (c) 2019 National Institute of Advanced Industrial Science and Technology (AIST)
+
+---
+
+GCE-Math: A C++ generalized constant expression-based math library
+Copyright 2016-2019 Keith O'Hara
+
+This product includes software developed by Keith O'Hara (http://www.kthohr.com)
+
+---
+
+StatsLib: A C++ Library of Statistical Distribution Functions
+Copyright 2011-2019 Keith O'Hara
+
+This product includes software developed by Keith O'Hara (http://www.kthohr.com)

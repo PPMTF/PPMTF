@@ -5,7 +5,7 @@ import csv
 import sys
 
 ################################# Parameters ##################################
-sys.argv = ["MakeTrainTestData_PF.py", "TK"]
+#sys.argv = ["MakeTrainTestData_PF.py", "TK"]
 
 if len(sys.argv) < 2:
     print("Usage:",sys.argv[0],"[City]")

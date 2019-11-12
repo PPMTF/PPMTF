@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#from scipy.sparse import lil_matrix
 import numpy as np
 import csv
 import os
@@ -7,7 +6,6 @@ import sys
 
 ################################# Parameters ##################################
 #sys.argv = ["MakeTrainTestData_PF.py", "PF", "TK"]
-#sys.argv = ["MakeTrainTestData_PF.py", "PF", "TK", 10, 10]
 #sys.argv = ["MakeTrainTestData_PF.py", "FS", "IS"]
 #sys.argv = ["MakeTrainTestData_PF.py", "FS", "NY"]
 #sys.argv = ["MakeTrainTestData_PF.py", "FS", "TK"]
