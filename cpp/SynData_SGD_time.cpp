@@ -105,7 +105,7 @@ using smat_t = sparse_mat<double>;
 /*
 ################## Train parameters in the generative model ###################
 # [output1]: init_prob (M-dim vector)
-# [output2]: trans_count ({(time_id, poi_index_from, poi_index_to): count})
+# [output2]: trans_count ({(time_slot, poi_index_from, poi_index_to): count})
 # [output3]: trans_prob (T x (M x M matrix))
 # [output4]: copy_train_data (N x CopyNum matrix)
  */
@@ -132,8 +132,8 @@ TrainParam(int M, int T, int TimeType, int CopyNum, int MaxTimInt,
       int poi_index = str2i(lst[1]);
       int unixtime = str2f(lst[3]);
       int ho = str2i(lst[5]);
-      // # Time period and time instant --> time_id, time_ins
-      int time_id, time_ins;
+      // # Time slot and time instant --> time_slot, time_ins
+      int time_slot, time_ins;
       if(TimeType == 1){
 	int x = str2i(lst[6]);
 	int mi = 2;
@@ -143,10 +143,10 @@ TrainParam(int M, int T, int TimeType, int CopyNum, int MaxTimInt,
 	}else{
 	  mi = 0;
 	}
-	time_id = 3 * (ho - 9) + mi;
-	time_ins = time_id;
+	time_slot = 3 * (ho - 9) + mi;
+	time_ins = time_slot;
       }else if(TimeType == 2){
-	time_id = ho/2;
+	time_slot = ho/2;
 	time_ins = ho;
       }else{
 	fprintf(stderr, "Wrong TimeType.\n");
@@ -160,13 +160,13 @@ TrainParam(int M, int T, int TimeType, int CopyNum, int MaxTimInt,
       if(user_index == user_index_prev){
 	// # Consider only temporally-continuous locations within MaxTimInt for a transition
 	if( (MaxTimInt == -1 || (unixtime - unixtime_prev <= MaxTimInt) ) && (time_ins - time_ins_prev == 1) ){
-	  auto key = make_tuple(time_id, poi_index_prev, poi_index);
+	  auto key = make_tuple(time_slot, poi_index_prev, poi_index);
 	  if(trans_count.find(key) == trans_count.end()){trans_count[key] = 0;}
 	  trans_count[key] += 1;
 	}
       }
-      // # Update init_count if the event is in the first time period
-      if(time_id == 0){init_count[poi_index] += 1; ++init_count_sum;}
+      // # Update init_count if the event is in the first time slot
+      if(time_slot == 0){init_count[poi_index] += 1; ++init_count_sum;}
       user_index_prev = user_index;
       poi_index_prev = poi_index;
       unixtime_prev = unixtime;
@@ -185,9 +185,9 @@ TrainParam(int M, int T, int TimeType, int CopyNum, int MaxTimInt,
   for(const auto& it : trans_count){
     const auto& key = it.first;
     auto& counts = it.second;
-    auto& time_id = get<0>(key);
+    auto& time_slot = get<0>(key);
     auto& poi_index_prev = get<1>(key);
-    count_sum(time_id, poi_index_prev) += counts;
+    count_sum(time_slot, poi_index_prev) += counts;
   }
   
   // # Make a transition probability matrix --> trans_prob
@@ -196,21 +196,21 @@ TrainParam(int M, int T, int TimeType, int CopyNum, int MaxTimInt,
   for(const auto& it : trans_count){
     const auto& key = it.first;
     auto& counts = it.second;
-    auto& time_id = get<0>(key);
+    auto& time_slot = get<0>(key);
     auto& poi_index_prev = get<1>(key);
     auto& poi_index = get<2>(key);
-    auto cs = count_sum(time_id, poi_index_prev);
+    auto cs = count_sum(time_slot, poi_index_prev);
     if(cs > 0){
-      trans_prob[time_id].set(poi_index_prev, poi_index, counts / cs);
+      trans_prob[time_slot].set(poi_index_prev, poi_index, counts / cs);
     }
   }
   
   // # Assign a uniform distribution for a row of zero-values --> trans_prob
-  rep(time_id, T){
+  rep(time_slot, T){
     rep(i, M){
-      if(trans_prob[time_id].row_sum(i) == 0){
+      if(trans_prob[time_slot].row_sum(i) == 0){
 	rep(j, M){
-	  trans_prob[time_id].set(i, j, 1.0 / M);
+	  trans_prob[time_slot].set(i, j, 1.0 / M);
 	}
       }
     }
@@ -236,7 +236,7 @@ void SynTraces(init_prob_t& init_prob,
   // # Output header information
   string outfile = buf;
   FILE* fp = fopen(outfile.c_str(), "w");
-  fprintf(fp, "user,trace_no,time_period,time_instant,poi_index,category\n");
+  fprintf(fp, "user,trace_no,time_slot,time_instant,poi_index,category\n");
   // # For each user
   rep(n, N){
     //if(n % 100 == 0){printf("%d\n", n);}
@@ -244,7 +244,7 @@ void SynTraces(init_prob_t& init_prob,
     int poi_index_pre = 0;
     // # For each trace
     rep(trace_no, TraceNum){
-      // # For each time period
+      // # For each time slot
       rep(t, T){
 	// # For each time instant
 	rep(ins, TimInsNum){
@@ -272,7 +272,7 @@ void SynTraces(init_prob_t& init_prob,
 	    }
 	  }
 	  assert(poi_index >= 0);
-	  // # Output an initial location ([user, trace_no, time_id, time_instant, poi_index, category])
+	  // # Output an initial location ([user, trace_no, time_slot, time_instant, poi_index, category])
 	  fprintf(fp, "%d,%d,%d,%d,%d,%s\n", n, trace_no, t, ins, poi_index, poi_dic[poi_index].c_str());
 	  // # Save the previous poi_index
 	  poi_index_pre = poi_index;
@@ -309,7 +309,7 @@ int main(int argc, char* argv[]){
   string POIIndexFile = DataDir + "POIindex_%s.csv";
   // # Training trace file (input)
   string TrainTraceFile = DataDir + "traintraces_%s.csv";
-  // # Type of time periods (1: 9-19h, 20min, 2: 2 hours, )
+  // # Type of time slots (1: 9-19h, 20min, 2: 2 hours, )
   int TimeType = 1;
   if(DataSet.find("PF") == 0){
   }else if(DataSet.find("FS") == 0){
@@ -329,7 +329,7 @@ int main(int argc, char* argv[]){
   // # Prefix of the synthesized trace file (output)
   string SynTraceFile = OutDir + "syntraces";
   
-  // # Number of time instants per time period
+  // # Number of time instants per time slot
   int TimInsNum = 1;
   if(DataSet.find("PF") == 0){
   }else if(DataSet.find("FS") == 0){
@@ -358,7 +358,7 @@ int main(int argc, char* argv[]){
   int N = line_num(TUserIndexFile) - 1;
   // # Number of POIs --> M
   int M = line_num(POIIndexFile) - 1;
-  // # Number of time periods --> T
+  // # Number of time slots --> T
   int T = 30;
   if(TimeType == 1){
   }else if(TimeType == 2){

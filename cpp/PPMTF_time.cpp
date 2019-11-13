@@ -12,16 +12,16 @@ using namespace std;
   # [input1]: RT1_observed ([user_index]{poi_index_from, poi_index_to: value})
   # [input2]: RT2_observed ([poi_index_from]{user_index, poi_index_to: value})
   # [input3]: RT3_observed ([poi_index_to]{user_index, poi_index_from: value})
-  # [input4]: RV1_observed ([user_index]{poi_index_from, time_id: value})
-  # [input5]: RV2_observed ([poi_index_from]{user_index, time_id: value})
-  # [input6]: RV3_observed ([time_id]{user_index, poi_index_from: value})
+  # [input4]: RV1_observed ([user_index]{poi_index_from, time_slot: value})
+  # [input5]: RV2_observed ([poi_index_from]{user_index, time_slot: value})
+  # [input6]: RV3_observed ([time_slot]{user_index, poi_index_from: value})
   # [input7]: A (N x K matrix)
   # [input8]: B (M x K matrix)
   # [input9]: C (M x K matrix)
   # [input10]: D (M x K matrix)
   # [input11]: N -- Number of users
   # [input12]: M -- Number of POIs
-  # [input13]: T -- Number of time periods
+  # [input13]: T -- Number of time slots
   # [output]: A, B, C, D, mu_A, Lam_A, mu_B, Lam_B, mu_C, Lam_C, mu_D, Lam_D
  */
 tuple<mat_t, mat_t, mat_t, mat_t, mat_t, mat_t, mat_t, mat_t>
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
   mkdir(OutDir.c_str(), 0755);
   const string ModelParameterFile = OutDir + "/modelparameter";
 
-  // Number of time periods
+  // Number of time slots
   int T;
   if(Dataset.find("PF") == 0){
 	  T = 30;

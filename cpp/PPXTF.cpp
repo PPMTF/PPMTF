@@ -198,10 +198,10 @@ tuple<r_t, r_t, r_t> ReadTrainTransTensor(int N, int M, int ZeroNum, const strin
   ######################## Read a training visit tensor #########################
   # [input1]: N -- Number of users
   # [input2]: M -- Number of POIs
-  # [input3]: T (Number of time periods)
-  # [output1]: RV1_observed ([user_index]{poi_index_from, time_id: value})
-  # [output2]: RV2_observed ([poi_index_from]{user_index, time_id: value})
-  # [output3]: RV3_observed ([time_id]{user_index, poi_index_from: value})
+  # [input3]: T (Number of time slots)
+  # [output1]: RV1_observed ([user_index]{poi_index_from, time_slot: value})
+  # [output2]: RV2_observed ([poi_index_from]{user_index, time_slot: value})
+  # [output3]: RV3_observed ([time_slot]{user_index, poi_index_from: value})
  */
 tuple<r_t, r_t, r_t> ReadTrainVisitTensor(int N, int M, int T, int ZeroNum, const string& infile){
   r_t RV1_observed(N), RV2_observed(M), RV3_observed(T);
@@ -215,10 +215,10 @@ tuple<r_t, r_t, r_t> ReadTrainVisitTensor(int N, int M, int T, int ZeroNum, cons
       int zero_num = 0;
       for(int i = 0; i < MT; ++i){
 	int poi_index_from = rand_index[i] % M;
-	int time_id = rand_index[i] / M;
+	int time_slot = rand_index[i] / M;
 	auto& a = RV1_observed[user_index];
-	if(a.find(p_t(poi_index_from,time_id)) == a.end()){
-	  write_to_tensor(RV1_observed, RV2_observed, RV3_observed, user_index, poi_index_from, time_id, 0);
+	if(a.find(p_t(poi_index_from,time_slot)) == a.end()){
+	  write_to_tensor(RV1_observed, RV2_observed, RV3_observed, user_index, poi_index_from, time_slot, 0);
 	  zero_num += 1;
 	  if(zero_num == ZeroNum){break;}
 	}
@@ -227,11 +227,11 @@ tuple<r_t, r_t, r_t> ReadTrainVisitTensor(int N, int M, int T, int ZeroNum, cons
   }else if(ZeroNum == -1){
     for(int user_index = 0; user_index < N; ++user_index){
       for(int poi_index_from = 0; poi_index_from < M; ++poi_index_from){
-	for(int time_id = 0; time_id < T; ++time_id){
+	for(int time_slot = 0; time_slot < T; ++time_slot){
 	  auto& a = RV1_observed[user_index];
-	  auto p = p_t(poi_index_from,time_id);
+	  auto p = p_t(poi_index_from,time_slot);
 	  if(a.find(p) == a.end()){
-	    write_to_tensor(RV1_observed, RV2_observed, RV3_observed, user_index, poi_index_from, time_id, 0);
+	    write_to_tensor(RV1_observed, RV2_observed, RV3_observed, user_index, poi_index_from, time_slot, 0);
 	  }
 	}
       }

@@ -67,7 +67,7 @@ VerifyTransTensorFile = DataDir + "verifytranstensor_XX_mnt" + str(MaxNumTrans) 
 # Verifying visit tensor file (output)
 VerifyVisitTensorFile = DataDir + "verifyvisittensor_XX_mnv" + str(MaxNumVisit) + ".csv"
 
-# Type of time periods (1: 9-19h, 20min, 2: 2 hours)
+# Type of time slots (1: 9-19h, 20min, 2: 2 hours)
 if DataSet == "PF":
     TimeType = 1
 elif DataSet[0:2] == "FS":
@@ -199,8 +199,8 @@ def MakeTrainTransTensor(st_user_index, user_num, poi_num, train_trace_list):
 # [input2]: user_num -- Number of users
 # [input3]: poi_num -- Number of POIs
 # [input4]: train_trace_list ([user_id, poi_id, unixtime, dow, hour, min])
-# [output1]: a ({(user_index, poi_index_from, time_id): counts})
-# [output2]: b ({(user_index, poi_index_from, time_id): probability})
+# [output1]: a ({(user_index, poi_index_from, time_slot): counts})
+# [output2]: b ({(user_index, poi_index_from, time_slot): probability})
 def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
     # Initialization
     a = {}
@@ -220,31 +220,31 @@ def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
                 mi = 1
             else:
                 mi = 0
-            time_id = 3 * (ho - 9) + mi
+            time_slot = 3 * (ho - 9) + mi
         elif TimeType == 2:
-            time_id = int(ho/2)
+            time_slot = int(ho/2)
 #            if event[5] <= MaxRoundTime:
-#                time_id = int(ho/2)
+#                time_slot = int(ho/2)
 #            elif event[5] >= 60 - MaxRoundTime:
-#                time_id = int(((ho + 1) % 24)/2)
+#                time_slot = int(((ho + 1) % 24)/2)
 #            else:
 #                continue
 
         else:
             print("Wrong TimeType.\n")
             sys.exit(-1)
-        a[(user_index, poi_index_from, time_id)] = a.get((user_index, poi_index_from, time_id), 0) + 1
+        a[(user_index, poi_index_from, time_slot)] = a.get((user_index, poi_index_from, time_slot), 0) + 1
 
     # Randomly delete counts for users whose number of visits exceed MaxNumVisit --> a
     if MaxNumVisit != -1:
         # Calculate the number of transitions for each user --> visit_num
-        for (user_index, poi_index_from, time_id), counts in sorted(a.items()):
+        for (user_index, poi_index_from, time_slot), counts in sorted(a.items()):
             visit_num[user_index] += 1
         print("Max of visit_num:", max(visit_num))
         # Randomly delete counts for users whose number of visits exceed MaxNumVisit
         user_index_prev = -1
         i = 0
-        for (user_index, poi_index_from, time_id), counts in sorted(a.items()):
+        for (user_index, poi_index_from, time_slot), counts in sorted(a.items()):
             if user_index != user_index_prev:
                 i = 0
                 if visit_num[user_index] > MaxNumVisit:
@@ -255,18 +255,18 @@ def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
                         del_visit[rand_index[j]] = 1
                     print("Deleted visits:", user_index + st_user_index, del_visit)
             if visit_num[user_index] > MaxNumVisit and del_visit[i] == 1:
-                del a[(user_index, poi_index_from, time_id)]
+                del a[(user_index, poi_index_from, time_slot)]
             user_index_prev = user_index
             i += 1
 
     # Make a count sum matrix --> count_sum
-    for (user_index, poi_index_from, time_id), counts in sorted(a.items()):
-#        print(user_index, poi_index_from, time_id, counts)
-        count_sum[user_index, time_id] += counts
+    for (user_index, poi_index_from, time_slot), counts in sorted(a.items()):
+#        print(user_index, poi_index_from, time_slot, counts)
+        count_sum[user_index, time_slot] += counts
 
     # Make a transition probability tensor --> b
-    for (user_index, poi_index_from, time_id), counts in sorted(a.items()):
-        b[(user_index, poi_index_from, time_id)] = counts / count_sum[user_index, time_id]
+    for (user_index, poi_index_from, time_slot), counts in sorted(a.items()):
+        b[(user_index, poi_index_from, time_slot)] = counts / count_sum[user_index, time_slot]
 
     return a, b
 
@@ -295,7 +295,7 @@ if os.path.exists(VUserIndexFile):
     N3 = len(open(VUserIndexFile).readlines()) - 1
 # Number of POIs --> M
 M = len(open(POIIndexFile).readlines()) - 1
-# Number of time periods --> T
+# Number of time slots --> T
 if TimeType == 1:
     T = 30
 elif TimeType == 2:
@@ -324,10 +324,10 @@ a2, b2 = MakeTrainVisitTensor(0, N, M, train_trace_list)
 
 # Output a training visit tensor
 f = open(TrainVisitTensorFile, "w")
-print("user_index,poi_index_from,time_id,count,prob", file=f)
+print("user_index,poi_index_from,time_slot,count,prob", file=f)
 writer = csv.writer(f, lineterminator="\n")
-for (user_index, poi_index_from, time_id), counts in sorted(a2.items()):
-    s = [user_index, poi_index_from, time_id, counts, b2[(user_index, poi_index_from, time_id)]]
+for (user_index, poi_index_from, time_slot), counts in sorted(a2.items()):
+    s = [user_index, poi_index_from, time_slot, counts, b2[(user_index, poi_index_from, time_slot)]]
     writer.writerow(s)
 f.close()
 
@@ -354,10 +354,10 @@ if os.path.exists(VerifyTraceFile):
 
     # Output a verifying visit tensor
     f = open(VerifyVisitTensorFile, "w")
-    print("user_index,poi_index_from,time_id,count,prob", file=f)
+    print("user_index,poi_index_from,time_slot,count,prob", file=f)
     writer = csv.writer(f, lineterminator="\n")
-    for (user_index, poi_index_from, time_id), counts in sorted(c2.items()):
-#        s = [user_index, poi_index_from, time_id, counts, d2[(user_index, poi_index_from, time_id)]]
-        s = [user_index+N+N2, poi_index_from, time_id, counts, d2[(user_index, poi_index_from, time_id)]]
+    for (user_index, poi_index_from, time_slot), counts in sorted(c2.items()):
+#        s = [user_index, poi_index_from, time_slot, counts, d2[(user_index, poi_index_from, time_slot)]]
+        s = [user_index+N+N2, poi_index_from, time_slot, counts, d2[(user_index, poi_index_from, time_slot)]]
         writer.writerow(s)
     f.close()

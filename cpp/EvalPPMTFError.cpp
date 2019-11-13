@@ -115,9 +115,9 @@ tuple<r_t, r_t> ReadTrainVisitTensor2(int N, int M, int T, int ZeroNum, const st
       int zero_num = 0;
       for(int i = 0; i < MT; ++i){
 	int poi_index_from = rand_index[i] % M;
-	int time_id = rand_index[i] / M;
+	int time_slot = rand_index[i] / M;
 	auto& a = RV1_observed[user_index];
-	auto p = p_t(poi_index_from,time_id);
+	auto p = p_t(poi_index_from,time_slot);
 	if(a.find(p) == a.end()){
 	  if(zero_num < ZeroNum){
 	    a[p] = 0;
@@ -132,9 +132,9 @@ tuple<r_t, r_t> ReadTrainVisitTensor2(int N, int M, int T, int ZeroNum, const st
   }else if(ZeroNum == -1){
     for(int user_index = 0; user_index < N; ++user_index){
       for(int poi_index_from = 0; poi_index_from < M; ++poi_index_from){
-	for(int time_id = 0; time_id < T; ++time_id){
+	for(int time_slot = 0; time_slot < T; ++time_slot){
 	  auto& a = RV1_observed[user_index];
-	  auto p = p_t(poi_index_from,time_id);
+	  auto p = p_t(poi_index_from,time_slot);
 	  if(a.find(p) == a.end()){
 	    a[p] = 0;
 	  }

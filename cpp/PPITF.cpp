@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
   mkdir(OutDir.c_str(), 0755);
   const string ModelParameterFile = OutDir + "/modelparameter";
 
-  // Number of time periods
+  // Number of time slots
   int T;
   if(Dataset.find("PF") == 0){
 	  T = 30;

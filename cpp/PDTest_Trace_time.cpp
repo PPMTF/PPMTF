@@ -209,6 +209,7 @@ pass_test_t perform_pd_test(int N,
     // # For each trace
     rep(trace_no, TraceNum){
       int user_trace_no = user_index * TraceNum + trace_no;
+      pass_test[user_trace_no + N * TraceNum] += 1;
       // # Find i s.t. [-(i+1)ReqEps < loglikeli_train[user_trace_no] <= -i ReqEps] --> i_tra
       i_tra = int(loglikeli_train(user_trace_no, 0) / ReqEps);
       // # For each verifying user
@@ -265,14 +266,14 @@ tuple<trans_t, first_visit_t, mat_t> read_syn_traces(const string& infile,
     auto lst = split(line);
     int user_index = str2i(lst[0]);
     int trace_no = str2i(lst[1]);
-    int time_id = str2i(lst[2]);
+    int time_slot = str2i(lst[2]);
     int time_ins = str2i(lst[3]);
     int poi_index = str2i(lst[4]);
     double ll = str2f(lst[6]);
 
     // # (user,trace)-pair no. --> user_trace_no
     int user_trace_no = user_index * TraceNum + trace_no;
-    if(time_id == 0 && time_ins == 0){
+    if(time_slot == 0 && time_ins == 0){
       // # Visited POI at the first time --> first_visit[user_trace_no] 
       first_visit[user_trace_no] = poi_index;
     }else{
@@ -280,7 +281,7 @@ tuple<trans_t, first_visit_t, mat_t> read_syn_traces(const string& infile,
       trans[user_trace_no].push_back(make_pair(poi_index_prev,poi_index));
     }
     // # Log-likelihood for the training trace --> loglikeli_train[user_trace_no]
-    if(time_id == T-1 && time_ins == TimInsNum-1){
+    if(time_slot == T-1 && time_ins == TimInsNum-1){
       loglikeli_train(user_trace_no, 0) = ll;
     }
     poi_index_prev = poi_index;
@@ -359,7 +360,7 @@ mat_t calc_ll(int VUserNum,
       // # For each trace
       rep(trace_no, TraceNum){
 	int user_trace_no = user_index * TraceNum + trace_no;
-	// # For each time period
+	// # For each time slot
 	rep(t, T){
 	  // # For each time instant
 	  rep(ins, TimInsNum){
@@ -379,11 +380,11 @@ mat_t calc_ll(int VUserNum,
 		double alpha = (time_poi_dist(t, poi_index) * prop_mat(poi_index, poi_index_pre))
 		  / (time_poi_dist(t, poi_index_pre) * prop_mat(poi_index_pre, poi_index));
 		trans_prob = prop_mat(poi_index_pre,poi_index) * min(1.0, alpha);
-	      // # If the self-transition probability for the POI at time period t has been computed
+	      // # If the self-transition probability for the POI at time slot t has been computed
 	      }else if(same_trans(t,poi_index_pre) != -1.0){
 		// # Use the self-transition probability --> trans_prob
 		trans_prob = same_trans(t,poi_index_pre);
-	      // # If the self-transition probability for the POI at time period t has NOT been computed
+	      // # If the self-transition probability for the POI at time slot t has NOT been computed
 	      }else{
 		// # Compute the self-transition probability for the POI --> same_trans[t,poi_index_pre]
 		trans_vec(poi_index_pre, 0) = 0;
@@ -545,7 +546,7 @@ int main(int argc, char* argv[]){
   // # Name of the model parameter A
   //string ParamA = "A";
 
-  // # Number of time periods
+  // # Number of time slots
   int T = -1;
   if(DataSet.find("PF") == 0){T = 30;}
   if(DataSet.find("FS") == 0){T = 12;}
@@ -554,7 +555,7 @@ int main(int argc, char* argv[]){
     exit(1);
   }
 
-  // # Number of time instants per time period
+  // # Number of time instants per time slot
   int TimInsNum = -1;
   if(DataSet.find("PF") == 0){TimInsNum = 1;}
   if(DataSet.find("FS") == 0){TimInsNum = 2;}

@@ -137,7 +137,7 @@ int sample_from_dist(const vec_t& df){
   # [input3]: D (T x K matrix)
   # [input4]: N -- Number of users
   # [input5]: M -- Number of POIs
-  # [input6]: T -- Number of time periods
+  # [input6]: T -- Number of time slots
   # [input7]: poi_dic ({poi_index: category})
  */
 void SynTraces(mat_t& A,
@@ -165,7 +165,7 @@ void SynTraces(mat_t& A,
   FILE* fp = fopen(outfile.c_str(), "w");
 
   // Output header information
-  fprintf(fp, "user,trace_no,time_period,time_instant,poi_index,category,loglikeli\n");
+  fprintf(fp, "user,trace_no,time_slot,time_instant,poi_index,category,loglikeli\n");
 
   // Read transitions from TrainTransTensorFile --> trans
   mat_t trans = mat_t::Zero(M, M);
@@ -235,12 +235,12 @@ void SynTraces(mat_t& A,
     // For each trace
     for(int trace_no = 0; trace_no < TraceNum; ++trace_no){
 	  double loglikeli = 0.0;
-      // For each time period
+      // For each time slot
       for(int t = 0; t < T; ++t){
 	// For each time instant
 	for(int ins = 0; ins < TimInsNum; ++ins){
 	  int poi_index = -1;
-	  // Initial time period and initial event
+	  // Initial time slot and initial event
 	  if(t == 0 && ins == 0){
 	    // Randomly sample POI from the POI distribution
 	    poi_index = sample_from_dist(time_poi_dist.row(t));
@@ -262,7 +262,7 @@ void SynTraces(mat_t& A,
 	    poi_index = sample_from_dist(trans_vec);
 		loglikeli += log(trans_vec(poi_index, 0));
 	  }
-	  // Output an initial location ([user, trace_no, time_period, time_instant, poi_index, category])
+	  // Output an initial location ([user, trace_no, time_slot, time_instant, poi_index, category])
 	  fprintf(fp, "%d,%d,%d,%d,%d,%s,%f\n", n, trace_no, t, ins, poi_index, poi_dic[poi_index].c_str(), loglikeli);
 
 	  // Save the previous poi_index
@@ -335,7 +335,7 @@ int main(int argc, char *argv[]){
   // Name of the model parameter A
   //const string ParamA = "A";
 
-  // Number of time periods
+  // Number of time slots
   int T;
   if(Dataset.find("PF") == 0){
 	  T = 30;
@@ -360,7 +360,7 @@ int main(int argc, char *argv[]){
   // Read visits from TrainVisitTensorFile (1:yes, 0:no)
   const int ReadVisit = 0;
 
-  // Number of time instants per time period
+  // Number of time instants per time slot
   int TimInsNum;
   if(Dataset.find("PF") == 0){
 	  TimInsNum = 1;
