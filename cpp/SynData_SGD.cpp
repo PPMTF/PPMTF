@@ -316,7 +316,7 @@ int main(int argc, char* argv[]){
     exit(1);
   }
   // # Output directory
-  string OutDir = DataDir + "VLDB17_" + City + "/";
+  string OutDir = DataDir + "SGD_" + City + "/";
   if(!dir_exists(OutDir)){
     //fprintf(stderr, "%s does not exist.\n", OutDir.c_str());
     mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
