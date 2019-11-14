@@ -1,7 +1,7 @@
 # PPMTF
 This is a source code of PPMTF (Privacy-Preserving Multiple Tensor Factorization): https://arxiv.org/abs/1911.04226.
 
-PPMTF is implemented with C++. Data preprocessing is implemented with Python. This software is released under the MIT License.
+PPMTF is implemented with C++ (data preprocessing and evaluation are implemented with Python). This software is released under the MIT License.
 
 # Directory Structure
 - cpp/
