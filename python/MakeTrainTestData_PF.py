@@ -22,38 +22,23 @@ TraceFile = "../data/PF/traces_" + City + ".csv"
 TUserIndexFile = "../data/PF/tuserindex_" + City + ".csv"
 # Testing user index file (output)
 EUserIndexFile = "../data/PF/euserindex_" + City + ".csv"
-# Verifying user index file (output)
-VUserIndexFile = "../data/PF/vuserindex_" + City + ".csv"
 # POI index file (output)
 POIIndexFile = "../data/PF/POIindex_" + City + ".csv"
 # Training trace file (output)
 TrainTraceFile = "../data/PF/traintraces_" + City + ".csv"
 # Testing trace file (output)
 TestTraceFile = "../data/PF/testtraces_" + City + ".csv"
-# Verifying trace file (output)
-VerifyTraceFile = "../data/PF/verifytraces_" + City + ".csv"
 
 # Minimum number of locations per user
-#MinNumLoc = 39
 MinNumLoc = 30
-#MinNumLoc = 100
-#MinNumLoc = 10
-#MinNumLoc = 1
 # Maximum number of locations per user (-1: N/A)
-#MaxNumLoc = 39
 MaxNumLoc = 30
-#MaxNumLoc = 100
-#MaxNumLoc = -1
 
 # Type of location (0: POI, 1: region)
-#TypeLoc = 0
 TypeLoc = 1
 # Minimum number of users per location (TypeLoc = 0)
-#MinNumUser = 10
 MinNumUser = 5
-#MinNumUser = 1
 # Threshold of the Euclidean distance between a user's location and POI (km) (TypeLoc = 0)
-#ThrDis = 0.2
 ThrDis = 0.1
 # Number of regions on the x-axis (TypeLoc = 1)
 #NumRegX = 10
@@ -82,29 +67,14 @@ MonthDay = {(7,1), (7,7), (10,7), (10,13), (12,16), (12,22)}
 # Time interval (min)
 TimeInt = 20
 # Start time (hour)
-#StartTime = 8
 StartTime = 9
 # End time (hour)
-#EndTime = 21
 EndTime = 19
 
 # Number of training users
-#TUserNum = 100
-#TUserNum = 200
-#TUserNum = 300
-#TUserNum = 400
 TUserNum = 500
-#TUserNum = 600
-#TUserNum = 700
-#TUserNum = 800
-#TUserNum = 900
-#TUserNum = 1000
 #Number of testing users
-#EUserNum = 100
 EUserNum = 500
-# Number of verifying users
-#VUserNum = 100
-VUserNum = 500
 
 ########################### Read POI & trace files ############################
 # [output1]: poi_dic ({poi_id: [poi_index, y, x, category, y_id, x_id, 2D_id]})
@@ -136,8 +106,8 @@ def ReadPOITrace():
     reader = csv.reader(f)
     next(reader)
     for i, lst in enumerate(reader):
-        if i % 100000 == 0:
-            print(i)
+#        if i % 100000 == 0:
+#            print(i)
         user_id = int(lst[0])
         y = float(lst[1])
         x = float(lst[2])
@@ -207,20 +177,17 @@ np.random.seed(1)
 # Read POI & trace files
 poi_dic, user_dic, ucount_dic, trace_list = ReadPOITrace()
 
-# Randomly select training, testing, verifying users --> tuse_list, euser_list, vuser_list
+# Randomly select training and testing users --> tuse_list, euser_list
 rand_index = np.arange(len(user_dic))
 tuser_list = np.zeros(len(user_dic))
 euser_list = np.zeros(len(user_dic))
-vuser_list = np.zeros(len(user_dic))
 np.random.shuffle(rand_index)
 for i in range(TUserNum):
     tuser_list[rand_index[i]] = 1
 for i in range(TUserNum, TUserNum + EUserNum):
     euser_list[rand_index[i]] = 1
-for i in range(TUserNum + EUserNum, TUserNum + EUserNum + VUserNum):
-    vuser_list[rand_index[i]] = 1
 
-# Training, testing, verifying user dic --> tuser_dic, euser_dic, vuser_dic
+# Training and testing user dic --> tuser_dic, euser_dic
 tuser_dic = {}
 i = 0
 for user_id in user_dic:
@@ -231,11 +198,6 @@ euser_dic = {}
 for user_id in user_dic:
     if euser_list[user_dic[user_id]] == 1:
         euser_dic[user_id] = i
-        i += 1
-vuser_dic = {}
-for user_id in user_dic:
-    if vuser_list[user_dic[user_id]] == 1:
-        vuser_dic[user_id] = i
         i += 1
 
 # Output training user index
@@ -255,16 +217,6 @@ writer = csv.writer(f, lineterminator="\n")
 for user_id in user_dic:
     if euser_list[user_dic[user_id]] == 1:
         lst = [user_id, euser_dic[user_id]]
-        writer.writerow(lst)
-f.close()
-
-# Output verifying user index
-f = open(VUserIndexFile, "w")
-print("user_id,user_index", file=f)
-writer = csv.writer(f, lineterminator="\n")
-for user_id in user_dic:
-    if vuser_list[user_dic[user_id]] == 1:
-        lst = [user_id, vuser_dic[user_id]]
         writer.writerow(lst)
 f.close()
 
@@ -310,15 +262,3 @@ for event in trace_list:
         writer.writerow(lst)
 f.close()
 
-# Output verifying traces
-f = open(VerifyTraceFile, "w")
-print("user_index,poi_index,category,unixtime,dow,hour,min,distance", file=f)
-writer = csv.writer(f, lineterminator="\n")
-for event in trace_list:
-    if event[0] in user_dic and vuser_list[user_dic[event[0]]] == 1:
-        if TypeLoc == 0:
-            lst = [vuser_dic[event[0]],poi_dic[event[1]][0],poi_dic[event[1]][1],event[2],event[3],event[4],event[5],event[6]]
-        elif TypeLoc == 1:
-            lst = [vuser_dic[event[0]],event[1],"-",event[2],event[3],event[4],event[5],event[6]]
-        writer.writerow(lst)
-f.close()

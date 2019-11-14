@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import csv
-import os
 import sys
 
 ################################# Parameters ##################################
@@ -28,44 +27,26 @@ DataDir = "../data/" + DataSet + "/"
 TUserIndexFile = DataDir + "tuserindex_XX.csv"
 # Testing user index file (input)
 EUserIndexFile = DataDir + "euserindex_XX.csv"
-# Verifying user index file (input)
-VUserIndexFile = DataDir + "vuserindex_XX.csv"
 # POI index file (input)
 POIIndexFile = DataDir + "POIindex_XX.csv"
 # Training trace file (input)
 TrainTraceFile = DataDir + "traintraces_XX.csv"
-# Verifying trace file (input)
-VerifyTraceFile = DataDir + "verifytraces_XX.csv"
 
 # Maximum number of transitions per user (-1: infinity)
 MaxNumTrans = 100
-#MaxNumTrans = 1000
-#MaxNumTrans = -1
 if len(sys.argv) >= 4:
     MaxNumTrans = int(sys.argv[3])
 
 # Maximum number of POI visits per user (-1: infinity)
 MaxNumVisit = 100
-#MaxNumVisit = 1000
-#MaxNumVisit = -1
 if len(sys.argv) >= 5:
     MaxNumVisit = int(sys.argv[4])
-
-## Maximum time to round towards zero (min) (DataSet = FS)
-#MaxRoundTime = 10
-##MaxRoundTime = 30
 
 # Training transition tensor file (output)
 TrainTransTensorFile = DataDir + "traintranstensor_XX_mnt" + str(MaxNumTrans) + ".csv"
 
 # Training visit tensor file (output)
 TrainVisitTensorFile = DataDir + "trainvisittensor_XX_mnv" + str(MaxNumVisit) + ".csv"
-
-# Verifying transition tensor file (output)
-VerifyTransTensorFile = DataDir + "verifytranstensor_XX_mnt" + str(MaxNumTrans) + ".csv"
-
-# Verifying visit tensor file (output)
-VerifyVisitTensorFile = DataDir + "verifyvisittensor_XX_mnv" + str(MaxNumVisit) + ".csv"
 
 # Type of time slots (1: 9-19h, 20min, 2: 2 hours)
 if DataSet == "PF":
@@ -80,7 +61,6 @@ else:
 if DataSet == "PF":
     MaxTimInt = -1
 elif DataSet[0:2] == "FS":
-#    MaxTimInt = 2400
     MaxTimInt = 7200
 else:
     print("Wrong Dataset")
@@ -138,12 +118,6 @@ def MakeTrainTransTensor(st_user_index, user_num, poi_num, train_trace_list):
             time_ins = 3 * (ho - 9) + mi
         if TimeType == 2:
             time_ins = ho
-#            if event[5] <= MaxRoundTime:
-#                time_ins = ho
-#            elif event[5] >= 60 - MaxRoundTime:
-#                time_ins = (ho + 1) % 24
-#            else:
-#                continue
 
         # Update a tensor if the event and the previous event are from the same user
         if event[0] == event_prev[0]:
@@ -151,7 +125,6 @@ def MakeTrainTransTensor(st_user_index, user_num, poi_num, train_trace_list):
                 print("Error: Unixtime is not sorted in ascending order.")
                 sys.exit(1)
             # Consider only temporally-continuous locations within MaxTimInt for a transition
-#            if MaxTimInt == -1 or event[2] - event_prev[2] <= MaxTimInt:
             if (MaxTimInt == -1 or event[2] - event_prev[2] <= MaxTimInt) and time_ins - time_ins_prev == 1:
                 user_index = event[0] - st_user_index
                 poi_index_to = event[1]
@@ -165,7 +138,7 @@ def MakeTrainTransTensor(st_user_index, user_num, poi_num, train_trace_list):
         # Calculate the number of transitions for each user --> trans_num
         for (user_index, poi_index_from, poi_index_to), counts in sorted(a.items()):
             trans_num[user_index] += 1
-        print("Max of trans_num:", max(trans_num))
+#        print("Max of trans_num:", max(trans_num))
         # Randomly delete counts for users whose number of transitions exceed MaxNumTrans
         user_index_prev = -1
         i = 0
@@ -178,7 +151,7 @@ def MakeTrainTransTensor(st_user_index, user_num, poi_num, train_trace_list):
                     del_trans = np.zeros(trans_num[user_index])
                     for j in range(trans_num[user_index] - MaxNumTrans):
                         del_trans[rand_index[j]] = 1
-                    print("Deleted transitions:", user_index + st_user_index, del_trans)
+#                    print("Deleted transitions:", user_index + st_user_index, del_trans)
             if trans_num[user_index] > MaxNumTrans and del_trans[i] == 1:
                 del a[(user_index, poi_index_from, poi_index_to)]
             user_index_prev = user_index
@@ -223,12 +196,6 @@ def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
             time_slot = 3 * (ho - 9) + mi
         elif TimeType == 2:
             time_slot = int(ho/2)
-#            if event[5] <= MaxRoundTime:
-#                time_slot = int(ho/2)
-#            elif event[5] >= 60 - MaxRoundTime:
-#                time_slot = int(((ho + 1) % 24)/2)
-#            else:
-#                continue
 
         else:
             print("Wrong TimeType.\n")
@@ -240,7 +207,7 @@ def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
         # Calculate the number of transitions for each user --> visit_num
         for (user_index, poi_index_from, time_slot), counts in sorted(a.items()):
             visit_num[user_index] += 1
-        print("Max of visit_num:", max(visit_num))
+#        print("Max of visit_num:", max(visit_num))
         # Randomly delete counts for users whose number of visits exceed MaxNumVisit
         user_index_prev = -1
         i = 0
@@ -253,7 +220,7 @@ def MakeTrainVisitTensor(st_user_index, user_num, poi_num, train_trace_list):
                     del_visit = np.zeros(visit_num[user_index])
                     for j in range(visit_num[user_index] - MaxNumVisit):
                         del_visit[rand_index[j]] = 1
-                    print("Deleted visits:", user_index + st_user_index, del_visit)
+#                    print("Deleted visits:", user_index + st_user_index, del_visit)
             if visit_num[user_index] > MaxNumVisit and del_visit[i] == 1:
                 del a[(user_index, poi_index_from, time_slot)]
             user_index_prev = user_index
@@ -277,22 +244,15 @@ np.random.seed(1)
 # Replace XX with City
 TUserIndexFile = TUserIndexFile.replace("XX", City)
 EUserIndexFile = EUserIndexFile.replace("XX", City)
-VUserIndexFile = VUserIndexFile.replace("XX", City)
 POIIndexFile = POIIndexFile.replace("XX", City)
 TrainTraceFile = TrainTraceFile.replace("XX", City)
-VerifyTraceFile = VerifyTraceFile.replace("XX", City)
 TrainTransTensorFile = TrainTransTensorFile.replace("XX", City)
 TrainVisitTensorFile = TrainVisitTensorFile.replace("XX", City)
-VerifyTransTensorFile = VerifyTransTensorFile.replace("XX", City)
-VerifyVisitTensorFile = VerifyVisitTensorFile.replace("XX", City)
 
 # Number of training users --> N
 N = len(open(TUserIndexFile).readlines()) - 1
 # Number of testing users --> N2
 N2 = len(open(EUserIndexFile).readlines()) - 1
-# Number of verifying users --> N3
-if os.path.exists(VUserIndexFile):
-    N3 = len(open(VUserIndexFile).readlines()) - 1
 # Number of POIs --> M
 M = len(open(POIIndexFile).readlines()) - 1
 # Number of time slots --> T
@@ -330,34 +290,3 @@ for (user_index, poi_index_from, time_slot), counts in sorted(a2.items()):
     s = [user_index, poi_index_from, time_slot, counts, b2[(user_index, poi_index_from, time_slot)]]
     writer.writerow(s)
 f.close()
-
-# If there exists a verifying trace file
-if os.path.exists(VerifyTraceFile):
-    # Read verifying traces
-    verify_trace_list = ReadTrainTrace(VerifyTraceFile)
-
-    # Make a verifying transition tensor
-    c, d = MakeTrainTransTensor(N+N2, N3, M, verify_trace_list)
-
-    # Output a verifying transition tensor
-    f = open(VerifyTransTensorFile, "w")
-    print("user_index,poi_index_from,poi_index_to,count,prob", file=f)
-    writer = csv.writer(f, lineterminator="\n")
-    for (user_index, poi_index_from, poi_index_to), counts in sorted(c.items()):
-#        s = [user_index, poi_index_from, poi_index_to, counts, d[(user_index, poi_index_from, poi_index_to)]]
-        s = [user_index+N+N2, poi_index_from, poi_index_to, counts, d[(user_index, poi_index_from, poi_index_to)]]
-        writer.writerow(s)
-    f.close()
-
-    # Make a verifying visit tensor
-    c2, d2 = MakeTrainVisitTensor(N+N2, N3, M, verify_trace_list)
-
-    # Output a verifying visit tensor
-    f = open(VerifyVisitTensorFile, "w")
-    print("user_index,poi_index_from,time_slot,count,prob", file=f)
-    writer = csv.writer(f, lineterminator="\n")
-    for (user_index, poi_index_from, time_slot), counts in sorted(c2.items()):
-#        s = [user_index, poi_index_from, time_slot, counts, d2[(user_index, poi_index_from, time_slot)]]
-        s = [user_index+N+N2, poi_index_from, time_slot, counts, d2[(user_index, poi_index_from, time_slot)]]
-        writer.writerow(s)
-    f.close()

@@ -26,29 +26,19 @@ TraceFile = "../data/FS/traces_XX.csv"
 TUserIndexFile = "../data/FS/tuserindex_XX.csv"
 # Testing user index file (output)
 EUserIndexFile = "../data/FS/euserindex_XX.csv"
-# Verifying user index file (output)
-VUserIndexFile = "../data/FS/vuserindex_XX.csv"
 # POI index file (output)
 POIIndexFile = "../data/FS/POIindex_XX.csv"
 # Training trace file (output)
 TrainTraceFile = "../data/FS/traintraces_XX.csv"
 # Testing trace file (output)
 TestTraceFile = "../data/FS/testtraces_XX.csv"
-# Verifying trace file (output)
-VerifyTraceFile = "../data/FS/verifytraces_XX.csv"
 # Number of extracted POIs
 ExtrPOINum = 1000
 # Minimum number of locations per user
-#MinNumLoc = 20
-#MinNumLoc = 10
 MinNumLoc = 1
 
 # Ratio of testing users over all users
 EUserRatio = 0.2
-#EUserRatio = 0.1
-# Ratio of verifying users over all users
-VUserRatio = 0
-#VUserRatio = 0.1
 
 ########################### Read POI & trace files ############################
 # [output1]: poi_dic ({poi_id: [poi_index, y, x, category, counts]})
@@ -117,37 +107,29 @@ POIFile = POIFile.replace("XX", City)
 TraceFile = TraceFile.replace("XX", City)
 TUserIndexFile = TUserIndexFile.replace("XX", City)
 EUserIndexFile = EUserIndexFile.replace("XX", City)
-VUserIndexFile = VUserIndexFile.replace("XX", City)
 POIIndexFile = POIIndexFile.replace("XX", City)
 TrainTraceFile = TrainTraceFile.replace("XX", City)
 TestTraceFile = TestTraceFile.replace("XX", City)
-VerifyTraceFile = VerifyTraceFile.replace("XX", City)
 
 # Read POI & trace files
 poi_all_list, poi_dic, user_dic, ucount_dic, trace_list = ReadPOITrace()
 
 # Number of testing users
 EUserNum = int(len(user_dic) * EUserRatio)
-# Number of verification users
-VUserNum = int(len(user_dic) * VUserRatio)
-#VUserNum = int(len(user_dic) * (EUserRatio + VUserRatio)) - EUserNum
 # Number of training users
-TUserNum = int(len(user_dic)) - EUserNum - VUserNum
+TUserNum = int(len(user_dic)) - EUserNum
 
-# Randomly select training, testing, verifying users --> tuse_list, euser_list, vuser_list
+# Randomly select training and testing users --> tuse_list, euser_list
 rand_index = np.arange(len(user_dic))
 tuser_list = np.zeros(len(user_dic))
 euser_list = np.zeros(len(user_dic))
-vuser_list = np.zeros(len(user_dic))
 np.random.shuffle(rand_index)
 for i in range(TUserNum):
     tuser_list[rand_index[i]] = 1
 for i in range(TUserNum, TUserNum + EUserNum):
     euser_list[rand_index[i]] = 1
-for i in range(TUserNum + EUserNum, TUserNum + EUserNum + VUserNum):
-    vuser_list[rand_index[i]] = 1
 
-# Training, testing, verifying user dic --> tuser_dic, euser_dic, vuser_dic
+# Training and testing user dic --> tuser_dic, euser_dic
 tuser_dic = {}
 i = 0
 for user_id in user_dic:
@@ -158,11 +140,6 @@ euser_dic = {}
 for user_id in user_dic:
     if euser_list[user_dic[user_id]] == 1:
         euser_dic[user_id] = i
-        i += 1
-vuser_dic = {}
-for user_id in user_dic:
-    if vuser_list[user_dic[user_id]] == 1:
-        vuser_dic[user_id] = i
         i += 1
 
 # Output training user index
@@ -182,16 +159,6 @@ writer = csv.writer(f, lineterminator="\n")
 for user_id in user_dic:
     if euser_list[user_dic[user_id]] == 1:
         lst = [user_id, euser_dic[user_id]]
-        writer.writerow(lst)
-f.close()
-
-# Output verifying user index
-f = open(VUserIndexFile, "w")
-print("user_id,user_index", file=f)
-writer = csv.writer(f, lineterminator="\n")
-for user_id in user_dic:
-    if vuser_list[user_dic[user_id]] == 1:
-        lst = [user_id, vuser_dic[user_id]]
         writer.writerow(lst)
 f.close()
 
@@ -226,17 +193,5 @@ for event in trace_list:
     poi_id = event[1]
     if user_id in user_dic and euser_list[user_dic[user_id]] == 1:
         lst = [euser_dic[user_id],poi_dic[poi_id][0],poi_dic[poi_id][3],event[2],event[3],event[4],event[5]]
-        writer.writerow(lst)
-f.close()
-
-# Output verifying traces
-f = open(VerifyTraceFile, "w")
-print("user_index,poi_index,category,unixtime,dow,hour,min", file=f)
-writer = csv.writer(f, lineterminator="\n")
-for event in trace_list:
-    user_id = event[0]
-    poi_id = event[1]
-    if user_id in user_dic and vuser_list[user_dic[user_id]] == 1:
-        lst = [vuser_dic[user_id],poi_dic[poi_id][0],poi_dic[poi_id][3],event[2],event[3],event[4],event[5]]
         writer.writerow(lst)
 f.close()

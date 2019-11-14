@@ -558,7 +558,7 @@ def ReadSynTraces(N, M, T, A_bin, syn_trace_file, pdtest_file, req_k, trace_no):
             if k < req_k:
                 pass_test[i] = 0
             i += 1
-    print("Fraction of passing the PD test:", float(np.sum(pass_test)) / float(N), "(", np.sum(pass_test), "/", N, ")")
+        print("Fraction of passing the PD test:", float(np.sum(pass_test)) / float(N), "(", np.sum(pass_test), "/", N, ")")
 
     # Read a real trace file
     f = open(syn_trace_file, "r")
@@ -942,7 +942,7 @@ for i in range(M):
 SynTraceFileLst = glob.glob(SynTraceFileAst)
 
 f = open(ResFile, "w")
-print("tracedir, tracefile, reid_rate, -, tsyn_TV, tsyn_l2_loss, tsyn_js, ttra_TV, ttra_l2_loss, ttra_js, tuni_TV, tuni_l2_loss, tuni_js, -, asyn_TV, asyn_l2_loss, asyn_js, atra_TV, atra_l2_loss, atra_js, auni_TV, auni_l2_loss, auni_js, -, tsynl_TV, tsynl_l2_loss, tsynl_js, ttral_TV, ttral_l2_loss, ttral_js, tunil_TV, tunil_l2_loss, tunil_js, -, vsyn_TV, vtra_TV, vuni_TV, -, asyn_trans_emd_y, asyn_trans_emd_x, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, -, ksyn_TV_max, ksyn_l2_loss_max, ksyn_js_max, kuni_TV_max, kuni_l2_loss_max, kuni_js_max", file=f)
+print("tracedir, tracefile, reid_rate, -, TP-TV_syn, TP-MSE_syn, TP-JS_syn, TP-TV_tra, TP-MSE_tra, TP-JS_tra, TP-TV_uni, TP-MSE_uni, TP-JS_uni, -, TP-TV-Top50_syn, TP-MSE-Top50_syn, TP-JS-Top50_syn, TP-TV-Top50_tra, TP-MSE-Top50_tra, TP-JS-Top50_tra, TP-TV-Top50_uni, TP-MSE-Top50_uni, TP-JS-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni, -, CP-TV_syn, CP-MSE_syn, CP-JS_syn, CP-TV_uni, CP-MSE_uni, CP-JS_uni", file=f)
 writer = csv.writer(f, lineterminator="\n")
 
 ######################### Utiility of the benchmark  ##########################
@@ -961,29 +961,6 @@ tuni_l1_loss, tuni_l2_loss = CalcL1L2(ttest_dist, tuni_dist, tones, T, M, M)
 # Calculate the JS divergence between ttest_dist & tuni_dist
 tuni_js = CalcJS(ttest_dist, tuni_dist, tones, T, M, M)
 
-###################### Average Geo-distribution #######################
-# Uniform distribution --> auni_dist
-atest_dist = np.zeros((1, M))
-atrain_dist = np.zeros((1, M))
-auni_dist = np.zeros((1, M))
-aones = np.ones(1)
-for t in range(T):
-    atest_dist += ttest_dist[t] / T
-for t in range(T):
-    atrain_dist += ttrain_dist[t] / T
-for t in range(T):
-    auni_dist += tuni_dist[t] / T
-
-# Calculate the l1 & l2 losses between atest_dist & atrain_dist
-atra_l1_loss, atra_l2_loss = CalcL1L2(atest_dist, atrain_dist, aones, 1, M, M)
-# Calculate the JS divergence between atest_dist & atrain_dist
-atra_js = CalcJS(atest_dist, atrain_dist, aones, 1, M, M)
-
-# Calculate the l1 & l2 losses between atest_dist & tuni_dist
-auni_l1_loss, auni_l2_loss = CalcL1L2(atest_dist, auni_dist, aones, 1, M, M)
-# Calculate the JS divergence between ttest_dist & tuni_dist
-auni_js = CalcJS(atest_dist, auni_dist, aones, 1, M, M)
-
 ####################### Time-specific Top-L POIs ######################
 # Calculate the l1 & l2 losses between test_dist & train_dist
 ttral_l1_loss, ttral_l2_loss = CalcL1L2(ttest_dist, ttrain_dist, tones, T, M, L1)
@@ -996,19 +973,30 @@ tunil_l1_loss, tunil_l2_loss = CalcL1L2(ttest_dist, tuni_dist, tones, T, M, L1)
 tunil_js = CalcJS(ttest_dist, tuni_dist, tones, T, M, L1)
 
 ######### Visit-fraction distribution [Ye+,KDD11][Do+,TMC13] ##########
-# Uniform distribution --> vf_uni_dist
-#vf_uni_dist = np.full((M, B), 1.0/float(B))
-vf_uni_dist = np.zeros((M, B))
-vf_bin = math.ceil(1.0*B/M) - 1
-for i in range(M):
-    vf_uni_dist[i,vf_bin] = 1
-
-# Calculate the average EMD between vf_test_dist & vf_train_dist
-vtra_l1 = CalcL1VfDist(vf_test_dist, vf_train_dist, vf_exist, M, B)
-# Calculate the average EMD between vf_test_dist & vf_uni_dist
-vuni_l1 = CalcL1VfDist(vf_test_dist, vf_uni_dist, vf_exist, M, B)
+vtra_l1 = 0
+vuni_l1 = 0
+if DataSet == "FS":
+    # Uniform distribution --> vf_uni_dist
+    #vf_uni_dist = np.full((M, B), 1.0/float(B))
+    vf_uni_dist = np.zeros((M, B))
+    vf_bin = math.ceil(1.0*B/M) - 1
+    for i in range(M):
+        vf_uni_dist[i,vf_bin] = 1
+    
+    # Calculate the average EMD between vf_test_dist & vf_train_dist
+    vtra_l1 = CalcL1VfDist(vf_test_dist, vf_train_dist, vf_exist, M, B)
+    # Calculate the average EMD between vf_test_dist & vf_uni_dist
+    vuni_l1 = CalcL1VfDist(vf_test_dist, vf_uni_dist, vf_exist, M, B)
 
 ################### Basis-specific Geo-distribution ###################
+atrain_dist = np.zeros((1, M))
+auni_dist = np.zeros((1, M))
+aones = np.ones(1)
+for t in range(T):
+    atrain_dist += ttrain_dist[t] / T
+for t in range(T):
+    auni_dist += tuni_dist[t] / T
+
 ktra_l1_loss = np.zeros(K)
 ktra_l2_loss = np.zeros(K)
 for k in range(K):
@@ -1059,15 +1047,10 @@ for SynTraceFile in SynTraceFileLst:
     tsyn_l1_loss_avg = 0
     tsyn_l2_loss_avg = 0
     tsyn_js_avg = 0
-    asyn_l1_loss_avg = 0
-    asyn_l2_loss_avg = 0
-    asyn_js_avg = 0
+
     tsynl_l1_loss_avg = 0
     tsynl_l2_loss_avg = 0
     tsynl_js_avg = 0
-    tsyn_syn_cov_avg = 0
-    tsyn_train_cov_avg = 0
-    tsyn_rel_cov_avg = 0
 
     vsyn_l1_avg = 0
 
@@ -1079,7 +1062,7 @@ for SynTraceFile in SynTraceFileLst:
     asyn_trans_emd_x_avg = 0
 
     # PD test result file --> PDTestResFile
-    if PDTest == 1 and (SynAlg == "PPMTF" or SynAlg == "PPITF"):
+    if DataSet == "FS" and PDTest == 1 and (SynAlg == "PPMTF" or SynAlg == "PPITF"):
         PDTestResFile = DataDir + os.path.split(SynTraceFile)[0].split("/")[-1] + "/" + "pdtest_res"
     else:
         PDTestResFile = "none"
@@ -1098,20 +1081,6 @@ for SynTraceFile in SynTraceFileLst:
         tsyn_js = CalcJS(ttest_dist, tsyn_dist, tones, T, M, M)
         tsyn_js_avg += tsyn_js
 
-        ###################### Average Geo-distribution #######################
-        # Uniform distribution --> auni_dist
-        asyn_dist = np.zeros((1, M))
-        for t in range(T):
-            asyn_dist += tsyn_dist[t] / T
-        
-        # Calculate the l1 & l2 losses between atest_dist & asyn_dist
-        asyn_l1_loss, asyn_l2_loss = CalcL1L2(atest_dist, asyn_dist, aones, 1, M, M)
-        asyn_l1_loss_avg += asyn_l1_loss
-        asyn_l2_loss_avg += asyn_l2_loss
-        # Calculate the JS divergence between atest_dist & asyn_dist
-        asyn_js = CalcJS(atest_dist, asyn_dist, aones, 1, M, M)
-        asyn_js_avg += asyn_js
-
         ####################### Time-specific Top-L POIs ######################
         # Calculate the l1 & l2 losses between ttest_dist & tsyn_dist
         tsynl_l1_loss, tsynl_l2_loss = CalcL1L2(ttest_dist, tsyn_dist, tones, T, M, L1)
@@ -1122,9 +1091,10 @@ for SynTraceFile in SynTraceFileLst:
         tsynl_js_avg += tsynl_js
     
         ######### Visit-fraction distribution [Ye+,KDD11][Do+,TMC13] ##########
-        # Calculate the average EMD between vf_test_dist & vf_syn_dist
-        vsyn_l1 = CalcL1VfDist(vf_test_dist, vf_syn_dist, vf_exist, M, B)
-        vsyn_l1_avg += vsyn_l1
+        if DataSet == "FS":
+            # Calculate the average EMD between vf_test_dist & vf_syn_dist
+            vsyn_l1 = CalcL1VfDist(vf_test_dist, vf_syn_dist, vf_exist, M, B)
+            vsyn_l1_avg += vsyn_l1
     
         ################### Basis-specific Geo-distribution ###################
         for k in range(K):
@@ -1146,16 +1116,10 @@ for SynTraceFile in SynTraceFileLst:
     tsyn_l1_loss_avg /= TraceNum
     tsyn_l2_loss_avg /= TraceNum
     tsyn_js_avg /= TraceNum
-    asyn_l1_loss_avg /= TraceNum
-    asyn_l2_loss_avg /= TraceNum
-    asyn_js_avg /= TraceNum
+
     tsynl_l1_loss_avg /= TraceNum
     tsynl_l2_loss_avg /= TraceNum
     tsynl_js_avg /= TraceNum
-
-    tsyn_syn_cov_avg /= TraceNum
-    tsyn_train_cov_avg /= TraceNum
-    tsyn_rel_cov_avg /= TraceNum
 
     vsyn_l1_avg /= TraceNum
 
@@ -1173,7 +1137,6 @@ for SynTraceFile in SynTraceFileLst:
     # Output the results
     s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
          tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
-         asyn_l1_loss_avg/2.0, asyn_l2_loss_avg, asyn_js_avg, atra_l1_loss/2.0, atra_l2_loss, atra_js, auni_l1_loss/2.0, auni_l2_loss, auni_js, "-", 
          tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
          vsyn_l1_avg, vtra_l1, vuni_l1, "-", 
          asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 

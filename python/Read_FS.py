@@ -145,8 +145,8 @@ def ReadFS():
     checkin_num = 0
     for i, line in enumerate(f):
 #    for line in f:
-        if i % 10000000 == 0:
-            print(i)
+#        if i % 10000000 == 0:
+#            print(i)
         lst = line.split("\t")
         user_id = int(lst[0])
 #        user_id = lst[0]
@@ -155,11 +155,11 @@ def ReadFS():
         if poi_id in poi_dic:
             daytim_list = daytim.split(" ")
             if(len(daytim_list) != 6):
-                print("Cannot read:", line)
+#                print("Cannot read:", line)
                 continue
             tim_list = daytim_list[3].split(":")
             if(len(tim_list) != 3):
-                print("Cannot read:", line)
+#                print("Cannot read:", line)
                 continue
             # day of week --> dow
             dow = daytim_list[0]

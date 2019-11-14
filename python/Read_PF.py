@@ -24,18 +24,13 @@ POIFile = "../data/PF/POI_" + City + ".csv"
 TraceFile = "../data/PF/traces_" + City + ".csv"
 # Minimum of y (latitude)
 MIN_Y = 35.65
-#MIN_Y = 35.11
 # Maximum of y (latitude)
 MAX_Y = 35.75
-#MAX_Y = 36.59
 # Minimum of x (longitude)
 MIN_X = 139.68
-#MIN_X = 138.95
 # Maximum of x (longitude)
 MAX_X = 139.8
-#MAX_X = 140.55
 # Type of location (0: POI, 1: region)
-#TypeLoc = 0
 TypeLoc = 1
 # Number of regions on the x-axis (TypeLoc = 1)
 #NumRegX = 10
