@@ -12,6 +12,7 @@ import os
 #sys.argv = ["EvalUtilPriv.py", "PF", "TK", "PPMTF"]
 #sys.argv = ["EvalUtilPriv.py", "PF", "TK", "PPITF"]
 #sys.argv = ["EvalUtilPriv.py", "PF", "TK", "SGD"]
+#sys.argv = ["EvalUtilPriv.py", "FS", "TK", "SGLT"]
 #sys.argv = ["EvalUtilPriv.py", "FS", "IS", "PPMTF", 1]
 #sys.argv = ["EvalUtilPriv.py", "FS", "JK", "PPMTF", 1]
 #sys.argv = ["EvalUtilPriv.py", "FS", "KL", "PPMTF", 1]
@@ -32,7 +33,7 @@ import os
 #sys.argv = ["EvalUtilPriv.py", "FS", "SP", "SGD", 1]
 
 if len(sys.argv) < 4:
-    print("Usage:",sys.argv[0],"[Dataset] [City] [SynAlg (PPMTF/PPITF/SGD)] ([TraceNum (default:10)] [ItrNum (default:100)] [PDTest (default:1)] [Reqk (default:10)])")
+    print("Usage:",sys.argv[0],"[Dataset] [City] [SynAlg (PPMTF/PPITF/SGD/SGLT)] ([TraceNum (default:10)] [ItrNum (default:100)] [PDTest (default:1)] [Reqk (default:10)])")
     sys.exit(0)
 
 # Dataset (PF/FS)
@@ -181,6 +182,15 @@ elif SynAlg == "SGD":
     SynTraceFileAst = SynTraceDir + "syntraces_cn*.csv"
     # Result file (output)
     ResFile = DataDir + "utilpriv_SGD_" + City + ".csv"
+elif SynAlg == "SGLT":
+    # Prefix of the synthesized trace directory  
+    SynTraceDirPre = DataDir + "SGLT_" + City
+    # Synthesized trace directory
+    SynTraceDir = SynTraceDirPre + "/"
+    # Synthesized trace file (with asterisk)
+    SynTraceFileAst = SynTraceDir + "*_syntraces.csv"
+    # Result file (output)
+    ResFile = DataDir + "utilpriv_SGLT_" + City + ".csv"
 else:
     print("Wrong SynAlg")
     sys.exit(-1)
