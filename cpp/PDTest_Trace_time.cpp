@@ -83,7 +83,7 @@ mat_t load_mat(const string& infile){
 
 mat_t ReadModelParameter(const string& prefix, int K, int ItrNum, const string& name){
   char buf[BUF_SIZE];
-  sprintf(buf, "%s_K%d_Itr%d_%s.csv", prefix.c_str(), K, ItrNum, name.c_str());
+  sprintf(buf, "%s_Itr%d_%s.csv", prefix.c_str(), ItrNum, name.c_str());
   //read_file(buf);
 
   //mat_t tmp = load_mat(buf);
@@ -441,7 +441,7 @@ void PDTest(mat_t& A,
   first_visit_t first_visit;
   mat_t loglikeli_train;
   tie(trans, first_visit, loglikeli_train) =
-    read_syn_traces(SynTraceFile + "_K" + to_str(K) + "_Itr" + to_str(ItrNum) + ".csv",
+    read_syn_traces(SynTraceFile + "_Itr" + to_str(ItrNum) + ".csv",
 		    TraceNum, T, TimInsNum, N);
   
   // # Calculate the log-likelihood for each verifying user --> loglikeli_verify
@@ -453,11 +453,11 @@ void PDTest(mat_t& A,
 				    ReqEps, Reqk);
   
   // # Output the PD test results (pass_test)
-  PDTest_out1(PDTestResFile + "_K" + to_str(K) + "_Itr" + to_str(ItrNum) + ".csv",
+  PDTest_out1(PDTestResFile + "_Itr" + to_str(ItrNum) + ".csv",
 	      N, TraceNum, pass_test);
 
   // # Output the PD test results (loglikeli_train, loglikeli_verify)
-  PDTest_out2(PDTestResFile + "_K" + to_str(K) + "_Itr" + to_str(ItrNum) + "_loglikeli.csv",
+  PDTest_out2(PDTestResFile + "_Itr" + to_str(ItrNum) + "_loglikeli.csv",
 	      N, TraceNum, VUserNum,
 	      loglikeli_train, loglikeli_verify);
 }

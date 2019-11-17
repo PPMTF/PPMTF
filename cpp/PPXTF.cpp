@@ -264,11 +264,11 @@ void savetxt(const string& outfile, const mat_t& A){
 
 void save_parameters(int K, int ItrNum, const string& prefix, const string& name, const vec_mat_t& A, const mat_t& mu_A, const mat_t& Lam_A, const string& X){
   char buf[BUF_SIZE];
-  sprintf(buf, "%s_K%d_Itr%d_%s%s.csv", prefix.c_str(), K, ItrNum, name.c_str(), X.c_str());
+  sprintf(buf, "%s_Itr%d_%s%s.csv", prefix.c_str(), ItrNum, name.c_str(), X.c_str());
   savetxt(buf, A[ItrNum]);
-  sprintf(buf, "%s_K%d_Itr%d_mu_%s%s.csv", prefix.c_str(), K, ItrNum, name.c_str(), X.c_str());
+  sprintf(buf, "%s_Itr%d_mu_%s%s.csv", prefix.c_str(), ItrNum, name.c_str(), X.c_str());
   savetxt(buf, mu_A);
-  sprintf(buf, "%s_K%d_Itr%d_Lam_%s%s.csv", prefix.c_str(), K, ItrNum, name.c_str(), X.c_str());
+  sprintf(buf, "%s_Itr%d_Lam_%s%s.csv", prefix.c_str(), ItrNum, name.c_str(), X.c_str());
   savetxt(buf, Lam_A);
 }
 

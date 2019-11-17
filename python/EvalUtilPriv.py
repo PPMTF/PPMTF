@@ -161,7 +161,7 @@ if SynAlg == "PPMTF":
     # Synthesized trace directory
     SynTraceDir = SynTraceDirPre + "*/"
     # Synthesized trace file (with asterisk)
-    SynTraceFileAst = SynTraceDir + "syntraces_K" + str(K) + "_Itr" + str(ItrNum) + ".csv"
+    SynTraceFileAst = SynTraceDir + "syntraces_Itr" + str(ItrNum) + ".csv"
     # Result file (output)
     ResFile = DataDir + "utilpriv_PPMTF_" + City + ".csv"
 elif SynAlg == "PPITF":
@@ -170,7 +170,7 @@ elif SynAlg == "PPITF":
     # Synthesized trace directory
     SynTraceDir = SynTraceDirPre + "*/"
     # Synthesized trace file (with asterisk)
-    SynTraceFileAst = SynTraceDir + "syntraces_K" + str(K) + "_Itr" + str(ItrNum) + ".csv"
+    SynTraceFileAst = SynTraceDir + "syntraces_Itr" + str(ItrNum) + ".csv"
     # Result file (output)
     ResFile = DataDir + "utilpriv_PPITF_" + City + ".csv"
 elif SynAlg == "SGD":
@@ -348,25 +348,25 @@ def ReadPOI():
 # [output4]: ParamD (T x K matrix)
 def ReadModelParameters():
     # Read model parameter A
-    infile = ModelParameterFile + "_K" + str(K) + "_Itr" + str(ItrNum) + "_A.csv"
+    infile = ModelParameterFile + "_Itr" + str(ItrNum) + "_A.csv"
     f = open(infile, "r")
     ParamA = np.loadtxt(infile, delimiter=",")
     f.close()
 
     # Read model parameter B
-    infile = ModelParameterFile + "_K" + str(K) + "_Itr" + str(ItrNum) + "_B.csv"
+    infile = ModelParameterFile + "_Itr" + str(ItrNum) + "_B.csv"
     f = open(infile, "r")
     ParamB = np.loadtxt(infile, delimiter=",")
     f.close()
 
     # Read model parameter C
-    infile = ModelParameterFile + "_K" + str(K) + "_Itr" + str(ItrNum) + "_C.csv"
+    infile = ModelParameterFile + "_Itr" + str(ItrNum) + "_C.csv"
     f = open(infile, "r")
     ParamC = np.loadtxt(infile, delimiter=",")
     f.close()
 
     # Read model parameter D
-    infile = ModelParameterFile + "_K" + str(K) + "_Itr" + str(ItrNum) + "_D.csv"
+    infile = ModelParameterFile + "_Itr" + str(ItrNum) + "_D.csv"
     f = open(infile, "r")
     ParamD = np.loadtxt(infile, delimiter=",")
     f.close()
@@ -557,7 +557,7 @@ def ReadSynTraces(N, M, T, A_bin, syn_trace_file, pdtest_file, req_k, trace_no):
 
     # Read a PD test result file --> pass_test
     if pdtest_file != "none":
-        infile = pdtest_file + "_K" + str(K) + "_Itr" + str(ItrNum) + ".csv"
+        infile = pdtest_file + "_Itr" + str(ItrNum) + ".csv"
         i = 0
         f = open(infile, "r")
         reader = csv.reader(f)
@@ -1145,12 +1145,20 @@ for SynTraceFile in SynTraceFileLst:
     asyn_trans_emd_x_avg /= TraceNum
 
     # Output the results
-    s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
-         tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
-         tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
-         vsyn_l1_avg, vtra_l1, vuni_l1, "-", 
-         asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
-         ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]
+    if DataSet == "PF":
+        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
+             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
+             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+             "-", "-", "-", "-", 
+             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
+             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]
+    else:
+        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
+             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
+             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+             vsyn_l1_avg, vtra_l1, vuni_l1, "-", 
+             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
+             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]            
     writer.writerow(s)
 
 f.close()

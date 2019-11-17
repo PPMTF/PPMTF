@@ -99,7 +99,7 @@ mat_t load_mat(const string& infile){
 
 mat_t ReadModelParameter(const string& prefix, int K, int ItrNum, const string& name){
   char buf[BUF_SIZE];
-  sprintf(buf, "%s_K%d_Itr%d_%s.csv", prefix.c_str(), K, ItrNum, name.c_str());
+  sprintf(buf, "%s_Itr%d_%s.csv", prefix.c_str(), ItrNum, name.c_str());
   //read_file(buf);
   return load_mat(buf);
 }
@@ -160,8 +160,7 @@ void SynTraces(mat_t& A,
 	       const string& TrainTransTensorFile,
 	       const string& TrainVisitTensorFile){
   char buf[BUF_SIZE];
-//  sprintf(buf, "%s_K%d_Itr%d_A.csv", SynTraceFile.c_str(), K, ItrNum);
-  sprintf(buf, "%s_K%d_Itr%d.csv", SynTraceFile.c_str(), K, ItrNum);
+  sprintf(buf, "%s_Itr%d.csv", SynTraceFile.c_str(), ItrNum);
   string outfile(buf);
   FILE* fp = fopen(outfile.c_str(), "w");
 
