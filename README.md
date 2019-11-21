@@ -21,7 +21,7 @@ PPMTF is implemented with C++ (data preprocessing and evaluation are implemented
 
 **(1) Install**
 
-Install Eigen 3.3.7, Generalized Constant Expression Math, and StatsLib (see cpp/README.txt).
+Install Eigen 3.3.7, Generalized Constant Expression Math, and StatsLib (see cpp/README.md).
 
 Install PPMTF (C++) as follows.
 ```bash
