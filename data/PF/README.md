@@ -4,8 +4,13 @@ The location data below this directory is newly created based on the [SNS-based 
 Attribute work to name in the SNS-based People Flow Data is as follows:
 
 [Attribute work to name]
+
 Nightley, Inc.
+
 Shibasaki & Sekimoto Laboratory, the University of Tokyo
+
 Micro Geo Data Forum
+
 People Flow project
+
 Center for Spatial Information Science at the University of Tokyo
