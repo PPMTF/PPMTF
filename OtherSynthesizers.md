@@ -48,9 +48,7 @@ python3 MakeSGLPMOutput_PF.py 500 10
 ```
 
 Then the synthetic traces (data_syntraces.csv) are stored in data/PF/SGLT_TK/.
-(Change the file name based on the parameters in SGLT as follows: data_c[#cluster]_[par_c]_[par_m]_[par_l]_[par_v]_syntraces.csv.)
-
-Note that 
+(Change the file name based on the parameters in SGLT as follows: data_c[#cluster]\_[par_c]\_[par_m]\_[par_l]\_[par_v]_syntraces.csv.)
 
 To evaluate the utility and privacy of the synthetic traces, run the following command.
 
@@ -65,6 +63,6 @@ Then the results (utilpriv_SGLT_TK.csv) will be stored in data/PF/.
 
 Replace PPMTF and SynData_PPMTF with PPITF and SynData_PPITF, respectively, and run (2) and (3) in README.md.
 
-Then synthesize traces (syntraces_Itr100.csv) in PF and FS will be generated in data/PF/ and data/FS/, respectively. 
+Then synthesize traces (syntraces_Itr100.csv) in PF and FS will be generated in data/PF/PPITF_TK_alp200_mnt100_mnv100/ and data/FS/PPITF_NY_alp200_mnt100_mnv100/, respectively. 
 
-Experimental results (utilpriv_PPMTF_TK.csv or utilpriv_PPMTF_NY.csv) will also be stored in data/PF/ or data/FS/.
+Experimental results (utilpriv_PPITF_TK.csv or utilpriv_PPITF_NY.csv) will also be stored in data/PF/ or data/FS/.
