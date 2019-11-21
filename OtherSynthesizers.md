@@ -1,3 +1,5 @@
+# Usage
+
 **(a) Synthesizing traces in PF/FS using SGD (Synthetic Data Generator)**
 
 Run the following commands.
