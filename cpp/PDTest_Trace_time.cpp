@@ -455,11 +455,12 @@ void PDTest(mat_t& A,
   // # Output the PD test results (pass_test)
   PDTest_out1(PDTestResFile + "_Itr" + to_str(ItrNum) + ".csv",
 	      N, TraceNum, pass_test);
-
+  /*
   // # Output the PD test results (loglikeli_train, loglikeli_verify)
   PDTest_out2(PDTestResFile + "_Itr" + to_str(ItrNum) + "_loglikeli.csv",
 	      N, TraceNum, VUserNum,
 	      loglikeli_train, loglikeli_verify);
+  */
 }
 
 int main(int argc, char* argv[]){

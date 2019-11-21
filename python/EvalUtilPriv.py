@@ -783,8 +783,8 @@ def CalcL1VfDist(vf_dist1, vf_dist2, vf_exist, M, B):
             l1_loss += np.abs(p1[j] - p2[j])
         x += 1
 
-    # Calculate the average EMD
-    l1_loss /= (x * B)
+    # Calculate the average l1-loss
+    l1_loss /= x
 
     return l1_loss
 
@@ -1156,7 +1156,7 @@ for SynTraceFile in SynTraceFileLst:
         s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
              tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
              tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
-             vsyn_l1_avg, vtra_l1, vuni_l1, "-", 
+             vsyn_l1_avg/2.0, vtra_l1/2.0, vuni_l1/2.0, "-", 
              asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
              ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]            
     writer.writerow(s)

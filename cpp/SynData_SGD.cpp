@@ -238,7 +238,7 @@ void SynTraces(init_prob_t& init_prob,
   fprintf(fp, "user,trace_no,time_slot,time_instant,poi_index,category\n");
   // # For each user
   rep(n, N){
-    if(n % 100 == 0){printf("%d\n", n);}
+    if(n % 1000 == 0){printf("Synthesized traces of %d users.\n", n);}
     // ########################## Synthesize traces ##########################
     int poi_index_pre = 0;
     // # For each trace

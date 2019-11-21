@@ -1,38 +1,22 @@
 #!/usr/bin/env python3
 import numpy as np
 import csv
+import os
 
 ################################# Parameters ##################################
 # Input directory
 InputDir = "../data/PF/"
-#InputDir = "../data/PF_n100_m100/"
-#InputDir = "../data/PF_n100_m200/"
-#InputDir = "../data/PF_n100_m300/"
-#InputDir = "../data/PF_n100_m400/"
-#InputDir = "../data/PF_n100_m500/"
-#InputDir = "../data/PF_n100_m600/"
-#InputDir = "../data/PF_n100_m700/"
-#InputDir = "../data/PF_n100_m800/"
-#InputDir = "../data/PF_n100_m900/"
-#InputDir = "../data/PF_n100_m1000/"
-#InputDir = "../data/PF_n200_m400/"
-#InputDir = "../data/PF_n300_m400/"
-#InputDir = "../data/PF_n400_m400/"
-#InputDir = "../data/PF_n500_m400/"
-#InputDir = "../data/PF_n600_m400/"
-#InputDir = "../data/PF_n700_m400/"
-#InputDir = "../data/PF_n800_m400/"
-#InputDir = "../data/PF_n900_m400/"
-#InputDir = "../data/PF_n1000_m400/"
+# Output directory
+OutputDir = "../data/PF/SGLT_TK/"
 
 # Training trace file (input)
 TrainTraceFile = InputDir + "traintraces_TK.csv"
 # sg-LPM trace file (output)
-SglpmTraceFile = InputDir + "input.trace"
+SglpmTraceFile = OutputDir + "input.trace"
 # sg-LPM mobility file (output)
-SglpmMobFile = InputDir + "input.mobility"
+SglpmMobFile = OutputDir + "input.mobility"
 # sg-LPM location file (output)
-SglpmLocFile = InputDir + "locations"
+SglpmLocFile = OutputDir + "locations"
 
 # Minimum of y (latitude)
 MIN_Y = 35.65
@@ -86,6 +70,10 @@ def ReadTrainTrace(tracefile):
     return train_trace_list
 
 #################################### Main #####################################
+# Make OutputDir
+if not os.path.exists(OutputDir):
+    os.mkdir(OutputDir)
+
 # Number of POIs --> M
 M = NumRegX * NumRegY
 

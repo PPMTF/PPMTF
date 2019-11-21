@@ -176,7 +176,7 @@ void SynTraces(mat_t& A,
   
   // For each user
   for(int n = 0; n < N; ++n){
-    printf("%d\n", n);
+    if(n % 1000 == 0){printf("Synthesized traces of %d users.\n", n);}
     // Initialization
     mat_t time_poi_dist = mat_t::Zero(T, M);
     mat_t time_poi_dist_sum = mat_t::Zero(T, 1);
@@ -211,7 +211,7 @@ void SynTraces(mat_t& A,
     }
 
     // #################### Calculate the proposal matrix ####################
-    puts("Calculating the proposal matrix ...");
+    //puts("Calculating the proposal matrix ...");
     for(int i = 0; i < M; ++i){
       mat_t ab = A.row(n).array() * B.row(i).array();
       // Elements in a sampled transition tensor (assign TransDelta for a small transition count) --> prop_mat
@@ -229,7 +229,7 @@ void SynTraces(mat_t& A,
     }
 
     // ########################## Synthesize traces ##########################
-    puts("Synthesizing traces ...");
+    //puts("Synthesizing traces ...");
     int poi_index_pre = 0;
     // For each trace
     for(int trace_no = 0; trace_no < TraceNum; ++trace_no){

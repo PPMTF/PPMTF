@@ -4,19 +4,19 @@ import sys
 import glob
 
 ################################# Parameters ##################################
-#sys.argv = ["MakeSglpmOutput_PF.py", "data/SGLPM_n500_m100_t30_c50_0.25_0.75_1_4", 500, 10]
-if len(sys.argv) < 4:
-    print("Usage:",sys.argv[0],"[sg-LPM directory (\* can be used as a wildcard)] [#User] [#Trace]" )
+#sys.argv = ["MakeSglpmOutput_PF.py", 500, 10]
+if len(sys.argv) < 2:
+    print("Usage:",sys.argv[0],"[#User] [#Trace]" )
     sys.exit(0)
 
 # Prefix of the sg-LPM directory (input)
-SglpmDir = sys.argv[1]
+SglpmDir ="../data/PF/SGLT_TK/"
 # Merged synthesized trace file (output)
-MSynTraceFile = "syntraces.csv"
+MSynTraceFile = "../data/PF/SGLT_TK/data_syntraces.csv"
 # Number of users
-N = int(sys.argv[2])
+N = int(sys.argv[1])
 # Number of traces per user
-L = int(sys.argv[3])
+L = int(sys.argv[2])
 
 ############################ Read synthesized traces #############################
 # [input1]: N -- Number of users
@@ -55,7 +55,7 @@ for dirname in dirname_lst:
     msyn_trace_file = dirname + "_" + MSynTraceFile
     
     f = open(msyn_trace_file, "w")
-    print("user,trace_no,time_period,time_instant,poi_index,category", file=f)
+    print("user,trace_no,time_slot,time_instant,poi_index,category", file=f)
     writer = csv.writer(f, lineterminator="\n")
     for (user_index, trace_index, time_index, poi_index) in syn_trace_list:
         s = [user_index,trace_index,time_index,0,poi_index,"-"]
