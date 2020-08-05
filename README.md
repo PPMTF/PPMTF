@@ -97,7 +97,7 @@ The experimental results after running (1)-(3) can be found in results/.
 (To obtain the experimental results for other synthesizers, see OtherSynthesizers.md.)
 
 # Execution Environment
-We used CentOS 7.5 with gcc 4.8.5 and python 3.6.5.
+We used CentOS 7.5 with gcc 4.8.5 and python 3.6.5. 
 
 # External Libraries used by PPMTF
 - [Eigen 3.3.7](http://eigen.tuxfamily.org/index.php?title=Main_Page) is distributed under the [MPL2](https://www.mozilla.org/en-US/MPL/2.0/).
