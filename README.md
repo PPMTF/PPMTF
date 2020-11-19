@@ -1,5 +1,9 @@
 # PPMTF
-This is a source code of PPMTF (Privacy-Preserving Multiple Tensor Factorization).
+This is a source code of PPMTF (Privacy-Preserving Multiple Tensor Factorization) in the following paper: 
+
+Takao Murakami, Koki Hamada, Yusuke Kawamoto, Takuma Hatano, "Privacy-Preserving Multiple Tensor Factorization for Synthesizing Large-Scale Location Traces with Cluster-Specific Features," Proceedings on Privacy Enhancing Technologies (PoPETs), Issue 2, 2021 (to appear).
+
+Full paper: https://arxiv.org/abs/1911.04226
 
 PPMTF is implemented with C++ (data preprocessing and evaluation are implemented with Python). This software is released under the MIT License.
 
