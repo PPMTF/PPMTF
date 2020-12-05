@@ -103,6 +103,26 @@ The experimental results after running (1)-(3) can be found in results/.
 # Execution Environment
 We used CentOS 7.5 with gcc 4.8.5 and python 3.6.5.
 
+0. install [docker](https://docs.docker.com/get-docker/) & [docker-compose](https://docs.docker.jp/compose/install.html)
+
+1. clone this repository
+```
+$ git clone https://github.com/PPMTF/PPMTF
+```
+
+2. build docker image
+```
+$ cd PPMTF
+$ docker-compose up -d --build
+```
+
+3. attach to the docker container
+```
+$ docker-compose exec ppmtf bash
+```
+4. excecute 
+check the #Usage section.
+
 # External Libraries used by PPMTF
 - [Eigen 3.3.7](http://eigen.tuxfamily.org/index.php?title=Main_Page) is distributed under the [MPL2](https://www.mozilla.org/en-US/MPL/2.0/).
 - [Generalized Constant Expression Math](https://www.kthohr.com/gcem.html) is distributed under the [Apache License 2.0](https://github.com/kthohr/stats/blob/master/LICENSE).
