@@ -24,8 +24,9 @@ RUN git clone https://github.com/kthohr/stats.git && \
     cp -r ./stats/include/* /opt/PPMTF/cpp/include/
 
 ## install Eigen library
-RUN git clone https://gitlab.com/libeigen/eigen.git && \
-    cp -r ./eigen/Eigen /opt/PPMTF/cpp/include/
+RUN wget https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz && \
+    tar -zxvf eigen-3.3.7.tar.gz && \
+    cp -r ./eigen-3.3.7/Eigen /opt/PPMTF/cpp/include/
 
 
 ## install gcem library
@@ -33,8 +34,6 @@ RUN git clone https://github.com/kthohr/gcem.git && \
     cp -r ./gcem/include/* /opt/PPMTF/cpp/include/
 
 RUN yum install -y gcc-c++
-
-   
 
 ## install python library
 RUN pip3.6 install scipy numpy
