@@ -200,14 +200,14 @@ ModelParameterDir = DataDir + "PPMTF_" + City + "_alp200_mnt100_mnv100/"
 ModelParameterFile = ModelParameterDir + "modelparameter"
 
 ######################### Read a training trace file ##########################
-# [output1]: trans_count ({(user_index, poi_index_from, poi_index_to): counts})
-# [output2]: trans_prob ({(user_index, poi_index_from, poi_index_to): probability})
-# [output3]: count_sum (N x M matrix)
+# [output1]: ttrans_count ({(user_index, poi_index_from, poi_index_to): counts})
+# [output2]: ttrans_prob ({(user_index, poi_index_from, poi_index_to): probability})
+# [output3]: tcount_sum (N x M matrix)
 def ReadTrainTraceFile():
     # Initialization
-    trans_count = {}
-    trans_prob = {}
-    count_sum = np.zeros((N, M))
+    ttrans_count = {}
+    ttrans_prob = {}
+    tcount_sum = np.zeros((N, M))
     user_index_prev = -1
     poi_index_prev = 0
 
@@ -220,26 +220,62 @@ def ReadTrainTraceFile():
         poi_index = int(lst[1])
         # Update a transition matrix if the event and the previous event are from the same user
         if user_index == user_index_prev:
-            trans_count[(user_index, poi_index_prev, poi_index)] = trans_count.get((user_index, poi_index_prev, poi_index), 0) + 1
+            ttrans_count[(user_index, poi_index_prev, poi_index)] = ttrans_count.get((user_index, poi_index_prev, poi_index), 0) + 1
         user_index_prev = user_index
         poi_index_prev = poi_index
     f.close()
 
-    # Make a count sum matrix --> count_sum
-    for (user_index, poi_index_prev, poi_index), counts in sorted(trans_count.items()):
-        count_sum[user_index, poi_index_prev] += counts
+    # Make a count sum matrix --> tcount_sum
+    for (user_index, poi_index_prev, poi_index), counts in sorted(ttrans_count.items()):
+        tcount_sum[user_index, poi_index_prev] += counts
 
-    # Make a transition probability tensor --> trans_prob
-    for (user_index, poi_index_prev, poi_index), counts in sorted(trans_count.items()):
-        trans_prob[(user_index, poi_index_prev, poi_index)] = counts / count_sum[user_index, poi_index_prev]
+    # Make a transition probability tensor --> ttrans_prob
+    for (user_index, poi_index_prev, poi_index), counts in sorted(ttrans_count.items()):
+        ttrans_prob[(user_index, poi_index_prev, poi_index)] = counts / tcount_sum[user_index, poi_index_prev]
 
-    return trans_count, trans_prob, count_sum
+    return ttrans_count, ttrans_prob, tcount_sum
+
+######################### Read a testing trace file ##########################
+# [output1]: etrans_count ({(user_index, poi_index_from, poi_index_to): counts})
+# [output2]: etrans_prob ({(user_index, poi_index_from, poi_index_to): probability})
+# [output3]: ecount_sum (N x M matrix)
+def ReadTestTraceFile():
+    # Initialization
+    etrans_count = {}
+    etrans_prob = {}
+    ecount_sum = np.zeros((N, M))
+    user_index_prev = -1
+    poi_index_prev = 0
+
+    # Read a testing trace file
+    f = open(TestTraceFile, "r")
+    reader = csv.reader(f)
+    next(reader)
+    for lst in reader:
+        user_index = int(lst[0]) - N
+        poi_index = int(lst[1])
+        # Update a transition matrix if the event and the previous event are from the same user
+        if user_index == user_index_prev:
+            etrans_count[(user_index, poi_index_prev, poi_index)] = etrans_count.get((user_index, poi_index_prev, poi_index), 0) + 1
+        user_index_prev = user_index
+        poi_index_prev = poi_index
+    f.close()
+
+    # Make a count sum matrix --> ecount_sum
+    for (user_index, poi_index_prev, poi_index), counts in sorted(etrans_count.items()):
+        ecount_sum[user_index, poi_index_prev] += counts
+
+    # Make a transition probability tensor --> etrans_prob
+    for (user_index, poi_index_prev, poi_index), counts in sorted(etrans_count.items()):
+        etrans_prob[(user_index, poi_index_prev, poi_index)] = counts / ecount_sum[user_index, poi_index_prev]
+
+    return etrans_count, etrans_prob, ecount_sum
 
 ######################## MAP re-identification attack #########################
-# [input1]: trans_prob ({(user_index, poi_index_from, poi_index_to): probability})
-# [input2]: count_sum (N x M matrix)
+# [input1]: ttrans_prob ({(user_index, poi_index_from, poi_index_to): probability})
+# [input2]: tcount_sum (N x M matrix)
 # [input3]: syn_trace_file
-def MAPReidentify(trans_prob, count_sum, syn_trace_file):
+def MAPReidentify(ttrans_prob, tcount_sum, syn_trace_file):
     # Initialization
     log_post = np.zeros(N)
     reid_res = np.zeros(N*TraceNum)
@@ -267,9 +303,9 @@ def MAPReidentify(trans_prob, count_sum, syn_trace_file):
         if user_index == user_index_prev and time_slot >= 1:
             # For each user
             for n in range(N):
-                if count_sum[n,poi_index_prev] > 0:
-                    if (n, poi_index_prev, poi_index) in trans_prob:
-                        log_post[n] += math.log(trans_prob[n,poi_index_prev,poi_index])
+                if tcount_sum[n,poi_index_prev] > 0:
+                    if (n, poi_index_prev, poi_index) in ttrans_prob:
+                        log_post[n] += math.log(ttrans_prob[n,poi_index_prev,poi_index])
                     else:
                         log_post[n] += math.log(DeltaProb)
                 else:
@@ -289,6 +325,138 @@ def MAPReidentify(trans_prob, count_sum, syn_trace_file):
     reid_res[user_no] = np.argmax(log_post)
 
     return log_post, reid_res
+
+############# Likelihood-ratio-based membership inference attack ##############
+# [input1]: ttrans_prob ({(user_index, poi_index_from, poi_index_to): probability})
+# [input2]: etrans_prob ({(user_index, poi_index_from, poi_index_to): probability})
+# [input3]: syn_trace_file
+# [output1]: llr_per_trace ((TraceNum x (N+N2) matrix)
+# [output2]: trace_thr (1000-dim vector)
+# [output3]: trace_true_pos (1000-dim vector)
+# [output4]: trace_true_neg (1000-dim vector)
+# [output5]: trace_max_acc
+# [output6]: trace_max_adv
+def LRMIA(ttrans_prob, etrans_prob, syn_trace_file):
+    # Initialization
+    llr_per_trace = np.full((TraceNum, N+N2), -sys.float_info.max)
+
+    # Membership inference for each training/testing user n
+    for n in range(N+N2):
+        # Population transition probability matrix --> pop_trans_prob
+        pop_trans_prob = np.zeros((M, M))
+        # Population transition matrix except for training user n
+        for (user_index, poi_index_prev, poi_index), prob in sorted(ttrans_prob.items()):
+            if n < N and user_index == n:
+                continue
+            pop_trans_prob[poi_index_prev, poi_index] += prob
+        # Population transition matrix except for testing user n-N
+        for (user_index, poi_index_prev, poi_index), prob in sorted(etrans_prob.items()):
+            if n >= N and user_index == n-N:
+                continue
+            pop_trans_prob[poi_index_prev, poi_index] += prob
+        pop_trans_prob /= (N+N2-1)
+
+        # Read a synthesized trace file
+        f = open(syn_trace_file, "r")
+        reader = csv.reader(f)
+        next(reader)
+        
+        # Initialization
+        user_index_prev = 0
+        poi_index_prev = 0
+        time_slot = 0
+        llr_trace = np.zeros(TraceNum)
+
+        for lst in reader:
+            user_index = int(lst[0])
+            trace_index = int(lst[1])
+#            user_index = user_index * TraceNum + trace_index
+    
+            poi_index = int(lst[4])
+    
+            if user_index != user_index_prev:
+                time_slot = 0
+    
+            # Update the log-likelihood ratio if the event and the previous event are from the same user
+            if user_index == user_index_prev and time_slot >= 1:
+                # Update the log-likelihood ratio for the user --> llr_trace[trace_index]
+                # Membership inference for training user n
+                if n < N:
+                    # Add the log-likelihood using the transition matrix of training user n
+                    if (n, poi_index_prev, poi_index) in ttrans_prob:
+                        llr_trace[trace_index] += math.log(ttrans_prob[n,poi_index_prev,poi_index])
+                    else:
+                        llr_trace[trace_index] += math.log(DeltaProb)
+                # Membership inference for testing user n-N
+                else:
+                    # Add the log-likelihood using the transition matrix of testing user n-N
+                    if (n-N, poi_index_prev, poi_index) in etrans_prob:
+                        llr_trace[trace_index] += math.log(etrans_prob[n-N,poi_index_prev,poi_index])
+                    else:
+                        llr_trace[trace_index] += math.log(DeltaProb)
+                # Subtract the log-likelihood using the population matrix
+                if pop_trans_prob[poi_index_prev, poi_index] > 0:
+                    llr_trace[trace_index] -= math.log(pop_trans_prob[poi_index_prev, poi_index])
+                else:
+                    llr_trace[trace_index] -= math.log(DeltaProb)
+
+            # Update llr_per_trace if a new user appears
+            elif user_index != user_index_prev:
+                for tr in range(TraceNum):
+                    if llr_per_trace[tr,n] < llr_trace[tr]:
+                        llr_per_trace[tr,n] = llr_trace[tr]
+#                    print("Update llr_per_trace.", user_index_prev, int(lst[0]), int(lst[1]), llr_trans, llr_trace)
+                llr_trace = np.zeros(TraceNum)
+    
+            user_index_prev = user_index
+            poi_index_prev = poi_index
+            time_slot += 1
+        f.close()
+
+        # Update the log-likelihood ratio for the last user
+        for tr in range(TraceNum):
+            if llr_per_trace[tr,n] < llr_trace[tr]:
+                llr_per_trace[tr,n] = llr_trace[tr]
+#        print(n, llr_per_trace[0,n], llr_per_trace[1,n], llr_per_trace[2,n])
+
+    # Calculate #true positive/negative using llr_per_trace --> trace_true_pos, trace_true_neg
+    MIA_thr = np.zeros(1000)
+    max_llr_per_trace = -sys.float_info.max
+    min_llr_per_trace = -sys.float_info.max
+    for tr in range(TraceNum):
+        if max_llr_per_trace < max(llr_per_trace[tr]):
+            max_llr_per_trace = max(llr_per_trace[tr])
+        if min_llr_per_trace < min(llr_per_trace[tr]):
+            min_llr_per_trace = min(llr_per_trace[tr])
+    MIA_true_pos = np.zeros(1000)
+    MIA_true_neg = np.zeros(1000)
+    # For each threshold
+    for i in range(1000):
+        # Threshold --> thr
+        MIA_thr[i] = min_llr_per_trace + (max_llr_per_trace - min_llr_per_trace) * i / 1000
+        # True positive --> true_pos
+        for tr in range(TraceNum):
+            for n in range(N):
+                if llr_per_trace[tr,n] > MIA_thr[i]:
+                    MIA_true_pos[i] += 1
+            # True negative --> true_neg
+            for n in range(N2):
+                if llr_per_trace[tr,N+n] <= MIA_thr[i]:
+                    MIA_true_neg[i] += 1
+    # Calculate the maximum accuracy using llr_per_trace --> MIA_max_acc
+    MIA_max_acc = 0
+    for i in range(1000):
+        if MIA_max_acc < MIA_true_pos[i] + MIA_true_neg[i]:
+            MIA_max_acc = MIA_true_pos[i] + MIA_true_neg[i]
+    MIA_max_acc /= (TraceNum*(N+N2))
+
+    # Calculate the maximum membership advantage using llr_per_trace --> MIA_max_adv
+    MIA_max_adv = -sys.float_info.max
+    for i in range(1000):
+        if MIA_max_adv < MIA_true_pos[i]/(TraceNum*N) - 1 + MIA_true_neg[i]/(TraceNum*N2):
+            MIA_max_adv = MIA_true_pos[i]/(TraceNum*N) - 1 + MIA_true_neg[i]/(TraceNum*N2)
+
+    return llr_per_trace, MIA_thr, MIA_true_pos, MIA_true_neg, MIA_max_acc, MIA_max_adv
 
 ############################### Read POI files ################################
 # [output1]: poi_dic ({poi_index: [y, x, y_id, x_id, category]})
@@ -908,9 +1076,10 @@ else:
     print("Wrong TimeType.\n")
     sys.exit(-1)
 
-# Read a training trace file for the MAP re-identification attack (DataSet = PF)
+# Read a training/testing trace file for the MAP re-identification attack (DataSet = PF)
 if DataSet == "PF":
-    trans_count, trans_prob, count_sum = ReadTrainTraceFile()
+    ttrans_count, ttrans_prob, tcount_sum = ReadTrainTraceFile()
+    etrans_count, etrans_prob, ecount_sum = ReadTestTraceFile()
 
 # Read POI files
 poi_dic = ReadPOI()
@@ -952,8 +1121,7 @@ for i in range(M):
 SynTraceFileLst = glob.glob(SynTraceFileAst)
 
 f = open(ResFile, "w")
-print("tracedir, tracefile, reid_rate, -, TP-TV_syn, TP-MSE_syn, TP-JS_syn, TP-TV_tra, TP-MSE_tra, TP-JS_tra, TP-TV_uni, TP-MSE_uni, TP-JS_uni, -, TP-TV-Top50_syn, TP-MSE-Top50_syn, TP-JS-Top50_syn, TP-TV-Top50_tra, TP-MSE-Top50_tra, TP-JS-Top50_tra, TP-TV-Top50_uni, TP-MSE-Top50_uni, TP-JS-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni, -, CP-TV_syn, CP-MSE_syn, CP-JS_syn, CP-TV_uni, CP-MSE_uni, CP-JS_uni", file=f)
-writer = csv.writer(f, lineterminator="\n")
+print("tracedir, tracefile, reid_rate, MIA_max_acc, MIA_max_adv, -, TP-TV_syn, TP-MSE_syn, TP-JS_syn, TP-TV_tra, TP-MSE_tra, TP-JS_tra, TP-TV_uni, TP-MSE_uni, TP-JS_uni, -, TP-TV-Top50_syn, TP-MSE-Top50_syn, TP-JS-Top50_syn, TP-TV-Top50_tra, TP-MSE-Top50_tra, TP-JS-Top50_tra, TP-TV-Top50_uni, TP-MSE-Top50_uni, TP-JS-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni, -, CP-TV_syn, CP-MSE_syn, CP-JS_syn, CP-TV_uni, CP-MSE_uni, CP-JS_uni", file=f)
 
 ######################### Utiility of the benchmark  ##########################
 ################### Time-specific Geo-distribution ####################
@@ -1044,12 +1212,26 @@ for SynTraceFile in SynTraceFileLst:
 
     if DataSet == "PF":
         # MAP (Maximum a Posteriori) re-identification attack --> reid_res
-        log_post, reid_res = MAPReidentify(trans_prob, count_sum, SynTraceFile)
+        log_post, reid_res = MAPReidentify(ttrans_prob, tcount_sum, SynTraceFile)
         reid_num = 0
         for i in range(N*TraceNum):
             if reid_res[i] == int(i / TraceNum):
                 reid_num += 1
         reid_rate = reid_num / (N*TraceNum)
+
+        # Likelihood-ratio-based MIA (Membership Inference Attack) --> mia_res
+        llr_per_trace, MIA_thr, MIA_true_pos, MIA_true_neg, MIA_max_acc, MIA_max_adv = LRMIA(ttrans_prob, etrans_prob, SynTraceFile)
+        # Output the detailed results of MIA
+        outfile = DataDir + "utilpriv_MIA_" + os.path.split(SynTraceFile)[0].split("/")[-1] + "_" + os.path.split(SynTraceFile)[1]
+        f2 = open(outfile, "w")
+        print("thr, #true_pos, #true_neg, accuracy, advantage", file=f2)
+        writer = csv.writer(f2, lineterminator="\n")
+        for i in range(1000):
+            s = [MIA_thr[i], MIA_true_pos[i], MIA_true_neg[i], 
+                 (MIA_true_pos[i]+MIA_true_neg[i])/(TraceNum*(N+N2)),
+                 MIA_true_pos[i]/(TraceNum*N) - 1 + MIA_true_neg[i]/(TraceNum*N2)]            
+            writer.writerow(s)
+        f2.close()
     else:
         reid_rate = 0
 
@@ -1145,15 +1327,16 @@ for SynTraceFile in SynTraceFileLst:
     asyn_trans_emd_x_avg /= TraceNum
 
     # Output the results
+    writer = csv.writer(f, lineterminator="\n")
     if DataSet == "PF":
-        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
+        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
              tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
              tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
              "-", "-", "-", "-", 
              asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
              ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]
     else:
-        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, "-", 
+        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
              tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
              tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
              vsyn_l1_avg/2.0, vtra_l1/2.0, vuni_l1/2.0, "-", 
