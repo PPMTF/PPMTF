@@ -1,17 +1,23 @@
-FROM ubuntu:18.04
+FROM centos:centos7.5.1804
 
 LABEL maintainer="murakami.takao"
 
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    apt-get install -y vim less git
+RUN yum update -y && \
+    yum install -y vim less git && \
+    yum install -y wget make
 
-RUN cd /opt && \
+RUN yum install -y gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel
+
+
+RUN wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tar.xz && \
+    tar -xvf Python-3.6.5.tar.xz && \
+    cd Python-3.6.5 && \
+    ./configure && \
+    make && \
+    make altinstall
+
+RUN cd /opt/ && \ 
     git clone https://github.com/PPMTF/PPMTF
-
-
-## install python library
-RUN pip3 install scipy numpy
 
 ## install cpp library
 RUN git clone https://github.com/kthohr/stats.git && \
@@ -26,6 +32,12 @@ RUN git clone https://gitlab.com/libeigen/eigen.git && \
 RUN git clone https://github.com/kthohr/gcem.git && \
     cp -r ./gcem/include/* /opt/PPMTF/cpp/include/
 
+RUN yum install -y gcc-c++
+
+   
+
+## install python library
+RUN pip3.6 install scipy numpy
+
 RUN cd /opt/PPMTF/cpp && \
     make
-   
