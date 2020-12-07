@@ -1,5 +1,5 @@
 # About the dataset
-The location data below this directory is newly created based on the [SNS-based people flow data](https://nightley.jp/archives/1954/). For more details, see: https://arxiv.org/abs/1911.04226.
+All the location data below this directory are generated based on the [SNS-based people flow data](https://nightley.jp/archives/1954/). For more details, see: https://arxiv.org/abs/1911.04226.
 
 Attribute work to name in the SNS-based People Flow Data is as follows:
 
@@ -26,6 +26,7 @@ Directory Structure is as follows (TK: Tokyo, alp200: alpha=200, mnt100: maximum
 - POI_TK.csv				&emsp;POI file.
 - POIindex_TK.csv			&emsp;POI index file.
 - testtraces_TK.csv			&emsp;Testing trace file.
+- traces_TK.csv				&emsp;Trace file.
 - traintraces_TK.csv			&emsp;Training trace file.
 - traintranstensor_TK_mnt100.csv	&emsp;Training transition-count tensor file.
 - trainvisittensor_TK_mnt100.csv	&emsp;Training visit-count tensor file.
