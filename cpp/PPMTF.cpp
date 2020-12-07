@@ -36,9 +36,9 @@ ppmtf(const r_t& rt1, const r_t& rt2, const r_t& rt3, const r_t& rv1, const r_t&
   mat_t W0 = mat_t::Identity(K,K);
   
   mat_t Lam_A, mu_A, Lam_B, mu_B, Lam_C, mu_C, Lam_D, mu_D;
-  puts("Sampling:");
+  puts("Gibbs Sampling:");
   for(int itr = 0; itr < ItrNum; ++itr){
-    printf("itr:%d\n", itr);
+    if(itr % 10 == 0) printf("itr:%d\n", itr);
 
     // Sample Lam_{A,B,C,D} & mu_{A,B,C,D}
     tie(Lam_A, mu_A) = sample_Lam_X_mu_X(A[itr], N, nu0, W0, beta0, mu0, K);

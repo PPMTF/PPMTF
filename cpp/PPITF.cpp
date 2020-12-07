@@ -33,9 +33,9 @@ pptf(const r_t& r1, const r_t& r2, const r_t& r3,
   mat_t W0 = mat_t::Identity(K,K);
   
   mat_t Lam_A, mu_A, Lam_B, mu_B, Lam_C, mu_C;
-  puts("Sampling:");
+  puts("Gibbs Sampling:");
   for(int itr = 0; itr < ItrNum; ++itr){
-    printf("itr:%d\n", itr);
+    if(itr % 10 == 0) printf("itr:%d\n", itr);
 
     // Sample Lam_{A,B,C,D} & mu_{A,B,C,D}
     tie(Lam_A, mu_A) = sample_Lam_X_mu_X(A[itr], L1, nu0, W0, beta0, mu0, K);

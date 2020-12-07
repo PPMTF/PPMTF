@@ -1208,7 +1208,7 @@ auni_trans_emd_y, auni_trans_emd_x = CalcEMDTransMat(atest_trans, auni_trans, po
 # For each synthesized trace file
 for SynTraceFile in SynTraceFileLst:
     SynTraceFile = SynTraceFile.replace("\\", "/")
-    print(os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1])
+    print("Evaluating", os.path.split(SynTraceFile)[0].split("/")[-1] + "/" + os.path.split(SynTraceFile)[1])
 
     if DataSet == "PF":
         # MAP (Maximum a Posteriori) re-identification attack --> reid_res
@@ -1221,17 +1221,17 @@ for SynTraceFile in SynTraceFileLst:
 
         # Likelihood-ratio-based MIA (Membership Inference Attack) --> mia_res
         llr_per_trace, MIA_thr, MIA_true_pos, MIA_true_neg, MIA_max_acc, MIA_max_adv = LRMIA(ttrans_prob, etrans_prob, SynTraceFile)
-        # Output the detailed results of MIA
-        outfile = DataDir + "utilpriv_MIA_" + os.path.split(SynTraceFile)[0].split("/")[-1] + "_" + os.path.split(SynTraceFile)[1]
-        f2 = open(outfile, "w")
-        print("thr, #true_pos, #true_neg, accuracy, advantage", file=f2)
-        writer = csv.writer(f2, lineterminator="\n")
-        for i in range(1000):
-            s = [MIA_thr[i], MIA_true_pos[i], MIA_true_neg[i], 
-                 (MIA_true_pos[i]+MIA_true_neg[i])/(TraceNum*(N+N2)),
-                 MIA_true_pos[i]/(TraceNum*N) - 1 + MIA_true_neg[i]/(TraceNum*N2)]            
-            writer.writerow(s)
-        f2.close()
+#        # Output the detailed results of MIA
+#        outfile = DataDir + "utilpriv_MIA_" + os.path.split(SynTraceFile)[0].split("/")[-1] + "_" + os.path.split(SynTraceFile)[1]
+#        f2 = open(outfile, "w")
+#        print("thr, #true_pos, #true_neg, accuracy, advantage", file=f2)
+#        writer = csv.writer(f2, lineterminator="\n")
+#        for i in range(1000):
+#            s = [MIA_thr[i], MIA_true_pos[i], MIA_true_neg[i], 
+#                 (MIA_true_pos[i]+MIA_true_neg[i])/(TraceNum*(N+N2)),
+#                 MIA_true_pos[i]/(TraceNum*N) - 1 + MIA_true_neg[i]/(TraceNum*N2)]            
+#            writer.writerow(s)
+#        f2.close()
     else:
         reid_rate = 0
 
