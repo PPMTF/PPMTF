@@ -98,7 +98,7 @@ $ python3 EvalUtilPriv.py PF TK PPMTF 10
 
 Then experimental results of PPMTF will be output in "data/PF/utilpriv_PPMTF_TK.csv".
 
-We plotted Figure 7 "PPMTF" in our paper using this file. See "res/PF/utilpriv.xlsx" for details.
+We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. See "res/PF/utilpriv.xlsx" for details.
 
 **(3) Synthesizing traces in FS using PPMTF**
 
