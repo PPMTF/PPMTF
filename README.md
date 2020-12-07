@@ -51,12 +51,14 @@ $ docker-compose up -d --build
 $ docker-compose exec ppmtf bash
 ```
 
-5. Run our code (NOTE: it may take a few hours depending on the running environment).
+5. Run our code (NOTE: it may take one hour or so depending on the running environment).
 ```
+$ cd opt/PPMTF/
+$ chmod +x run_PPMTF_PF.sh
 $ ./run_PPMTF_PF.sh
 ```
 
-Then experimental results of PPMTF in PF will be output in "data/PF/utilpriv_PPMTF_TK.csv". We plotted Figure 7 "PPMTF" in our paper using this file. See "res/PF/utilpriv.xlsx" for details.
+Then "utilpriv_PPMTF_TK.csv" will be output in "data/PF/". This is experimental results of PPMTF (alpha=200) in PF in Figure 7 of our paper. See "res/PF/utilpriv.xlsx" for details.
 
 # Usage
 
