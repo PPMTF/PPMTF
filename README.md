@@ -53,6 +53,8 @@ $ docker-compose up -d --build
 $ docker-compose exec ppmtf bash
 ```
 
+PPMTF repository is cloned in /opt folder. Files can be shared between a host system and the docker container by putting the files in /share folder.
+
 5. Run our code (NOTE: it may take one hour or so depending on the running environment).
 ```
 $ cd opt/PPMTF/
@@ -62,7 +64,7 @@ $ ./run_PPMTF_PF.sh
 
 Then experimental results of PPMTF (alpha=200) in PF will be output in "data/PF/utilpriv_PPMTF_TK.csv".
 
-We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "res/PF/utilpriv.xlsx". To change the alpha parameter, see **Usage (3)**.
+We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "results/PF/utilpriv.xlsx". To change the alpha parameter, see **Usage (3)**.
 
 # Usage
 
@@ -121,7 +123,7 @@ $ cd ../
 
 Then experimental results of PPMTF (utilpriv_PPMTF_TK.csv) will be output in data/PF/.
 
-We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. See "res/PF/utilpriv.xlsx" for details.
+We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. See "results/PF/utilpriv.xlsx" for details.
 
 **(4) Download and preprocess FS**
 
@@ -173,7 +175,7 @@ Then experimental results of PPMTF (utilpriv_PPMTF_NY.csv) will be output in dat
 
 Synthesized traces in other cities (IST/JK/KL/SP/TKY) can also be generated and evaluated by replacing NY with IS, JK, KL, SP, or TK.
 
-We plotted Figure 10 "PPMTF" in our paper using these files. See "res/FS/utilpriv.xlsx" for details.
+We plotted Figure 10 "PPMTF" in our paper using these files. See "results/FS/utilpriv.xlsx" for details.
 
 **(6) Experimental Results for Other Synthesizers**
 
