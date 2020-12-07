@@ -9,9 +9,9 @@ PPMTF is implemented with C++ (data preprocessing and evaluation are implemented
 
 # Purpose
 
-The purpose of this source code is to reproduce experimental results of PPMTF in PF (SNS-based people flow data) and FS (Foursquare dataset). In particular, we designed our code to easily reproduce experimental results of PPMTF (alpha=200) in PF (Figure 7 "PPMTF" in our paper) using Docker files. See "Running Our Code Using Dockerfiles" for details. 
+The purpose of this source code is to reproduce experimental results of PPMTF in PF (SNS-based people flow data) and FS (Foursquare dataset). In particular, we designed our code to easily reproduce experimental results of PPMTF (alpha=200) in PF (Figure 7 "PPMTF" in our paper) using Docker files. See **Running Our Code Using Dockerfiles** for details. 
 
-We also designed our code to reproduce experimental results of PPMTF in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See "Usage (4)(5)" for details.
+We also designed our code to reproduce experimental results of PPMTF in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See **Usage (4)(5)** for details.
 
 # Directory Structure
 - cpp/			&emsp;C++ codes (put the required files under this directory; see cpp/README.md).
@@ -62,7 +62,7 @@ $ ./run_PPMTF_PF.sh
 
 Then experimental results of PPMTF (alpha=200) in PF will be output in "data/PF/utilpriv_PPMTF_TK.csv".
 
-We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "res/PF/utilpriv.xlsx". To change the alpha parameter, see "Usage (3)".
+We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "res/PF/utilpriv.xlsx". To change the alpha parameter, see **Usage (3)**.
 
 # Usage
 
