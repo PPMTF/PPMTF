@@ -11,7 +11,7 @@ PPMTF is implemented with C++ (data preprocessing and evaluation are implemented
 
 The purpose of this source code is to reproduce experimental results of PPMTF in PF (SNS-based people flow data) and FS (Foursquare dataset). In particular, we designed our code to easily reproduce experimental results of PPMTF (alpha=200) in PF (Figure 7 "PPMTF" in our paper) using Docker files. See **Running Our Code Using Dockerfiles** for details. 
 
-We also designed our code to reproduce experimental results of PPMTF in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See **Usage (4)(5)** for details.
+We also designed our code to reproduce experimental results of PPMTF (alpha=200) in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See **Usage (4)(5)** for details.
 
 # Directory Structure
 - cpp/			&emsp;C++ codes (put the required files under this directory; see cpp/README.md).
@@ -156,9 +156,9 @@ $ cd python/
 $ python3 MakeTrainTestData_FS.py NY
 $ python3 MakeTrainTensor.py PF NY
 $ cd ../cpp/
-$ ./PPMTF FS NY
-$ ./SynData_PPMTF FS NY 1
-$ ./PDTest_Trace FS NY 1.0 10 32000 1
+$ ./PPMTF FS NY 200
+$ ./SynData_PPMTF FS NY 1 200
+$ ./PDTest_Trace FS NY 1.0 10 32000 1 200
 ```
 
 Then synthesize traces (syntraces_Itr100.csv) in NYC will be generated in data/FS/PPMTF_NY_alp200_mnt100_mnv100/.
