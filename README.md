@@ -66,7 +66,7 @@ We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alp
 
 # Usage
 
-Below we describe how to build and run our code in details. Note that (1) and (3) can be done using Docker files (see "Running Our Code Using Dockerfiles" for details).
+Below we describe how to build and run our code in details. Note that (1) and (3) can be done using Docker files (see **Running Our Code Using Dockerfiles** for details).
 
 **(1) Install**
 
