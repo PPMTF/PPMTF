@@ -11,13 +11,15 @@ PPMTF is implemented with C++ (data preprocessing and evaluation are implemented
 
 The purpose of this source code is to reproduce experimental results of PPMTF in PF (SNS-based people flow data) and FS (Foursquare dataset). In particular, we designed our code to easily reproduce experimental results of PPMTF (alpha=200) in PF (Figure 7 "PPMTF" in our paper) using Docker files. See "Running Our Code Using Dockerfiles" for details. 
 
-We also designed our code to reproduce experimental results of PPMTF in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See "Usage (3) Synthesizing traces in FS using PPMTF" for details.
+We also designed our code to reproduce experimental results of PPMTF in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See "Usage (4)(5)" for details.
 
 # Directory Structure
 - cpp/			&emsp;C++ codes (put the required files under this directory; see cpp/README.md).
 - data/			&emsp;Output data (obtained by running codes).
   - PF/			&emsp;Output data in PF (SNS-based people flow data).
+  - PF_dataset/		&emsp;Place PF (SNS-based people flow data) in this directory (currently empty).
   - FS/			&emsp;Output data in FS (Foursquare dataset).
+  - FS_dataset/		&emsp;Place FS (Foursquare dataset) in this directory (currently empty).
 - python/		&emsp;Python codes.
 - results/		&emsp;Experimental results.
   - PF/			&emsp;Experimental results in PF (SNS-based people flow data).
@@ -60,11 +62,11 @@ $ ./run_PPMTF_PF.sh
 
 Then experimental results of PPMTF (alpha=200) in PF will be output in "data/PF/utilpriv_PPMTF_TK.csv".
 
-We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "res/PF/utilpriv.xlsx". To change the alpha parameter, see "Usage (2) Synthesizing traces in PF using PPMTF".
+We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. To see the figure, see "res/PF/utilpriv.xlsx". To change the alpha parameter, see "Usage (3)".
 
 # Usage
 
-Below we describe how to build and run our code in details. Note that (1) and (2) can be done using Docker files (see "Running Our Code Using Dockerfiles" for details).
+Below we describe how to build and run our code in details. Note that (1) and (3) can be done using Docker files (see "Running Our Code Using Dockerfiles" for details).
 
 **(1) Install**
 
@@ -74,20 +76,37 @@ Install PPMTF (C++) as follows.
 ```
 $ cd cpp/
 $ make
+$ cd ../
 ```
 
-**(2) Synthesizing traces in PF using PPMTF**
+**(2) Download and preprocess PF**
+
+Download the [SNS-based people flow data](https://nightley.jp/archives/1954/) and place the dataset in data/PF_dataset/.
 
 Run the following commands.
 
 ```
 $ cd python/
+$ python3 Read_PF.py data/PF_dataset TK
+$ cd ../
+```
+
+Then the POI file (POI_TK.csv) and the trace file (traces_TK.csv) are output in data/PF/.
+
+**(3) Synthesizing traces in PF using PPMTF**
+
+Run the following commands.
+
+```
+$ cd python/
+$ python3 MakeTrainTestData_PF.py TK
 $ python3 MakeTrainTensor.py PF TK
 $ cd ../cpp/
 $ ./PPMTF PF TK 200
 (To change the alpha paramter from 200 to [alpha], run "./PPMTF PF TK [alpha]".)
 $ ./SynData_PPMTF PF TK 10 200
 (To change the alpha paramter from 200 to [alpha], run "./SynData_PPMTF PF TK 10 [alpha]".)
+$ cd ../
 ```
 
 Then synthesize traces (syntraces_Itr100.csv) in PF will be generated in data/PF/PPMTF_TK_alp200_mnt100_mnv100/.
@@ -95,28 +114,45 @@ Then synthesize traces (syntraces_Itr100.csv) in PF will be generated in data/PF
 To evaluate the utility and privacy of the synthetic traces, run the following command.
 
 ```
+$ cd python/
 $ python3 EvalUtilPriv.py PF TK PPMTF 10
+$ cd ../
 ```
 
 Then experimental results of PPMTF (utilpriv_PPMTF_TK.csv) will be output in data/PF/.
 
 We plotted Figure 7 "PPMTF" in our paper using this file, while changing the alpha parameter from 0.5 to 1000. See "res/PF/utilpriv.xlsx" for details.
 
-**(3) Synthesizing traces in FS using PPMTF**
+**(4) Download and preprocess FS**
 
-Download the [Foursquare dataset (Global-scale Check-in Dataset with User Social Networks)](https://sites.google.com/site/yangdingqi/home/foursquare-dataset).
+Download the [Foursquare dataset (Global-scale Check-in Dataset with User Social Networks)](https://sites.google.com/site/yangdingqi/home/foursquare-dataset) and place the dataset in data/FS_dataset/.
 
-Under the FS directory (including the Foursquare data files), run the following command (to fix garbled text).
+Run the following command to fix garbled text.
 
 ```
+$ cd data/FS_dataset/
 $ cat raw_POIs.txt | sed -e "s/Caf[^.]*\t/Caf\t/" > raw_POIs_fix.txt
+$ cd ../
 ```
 
 Run the following commands.
 
 ```
 $ cd python/
-$ python3 Read_FS.py [FS directory (including the Foursquare data files)] NY
+$ python3 Read_FS.py data/FS_dataset/ NY
+$ cd ../
+```
+
+Then the POI file (POI_NY.csv) and the trace file (traces_NY.csv) are output in data/PF/.
+
+The POI file and trace file in other cities (IST/JK/KL/SP/TKY) can also be generated by replacing NY with IS, JK, KL, SP, or TK.
+
+**(5) Synthesizing traces in FS using PPMTF**
+
+Run the following commands.
+
+```
+$ cd python/
 $ python3 MakeTrainTestData_FS.py NY
 $ python3 MakeTrainTensor.py PF NY
 $ cd ../cpp/
@@ -139,7 +175,7 @@ Synthesized traces in other cities (IST/JK/KL/SP/TKY) can also be generated and 
 
 We plotted Figure 10 "PPMTF" in our paper using these files. See "res/FS/utilpriv.xlsx" for details.
 
-**(4) Experimental Results for Other Synthesizers**
+**(6) Experimental Results for Other Synthesizers**
 
 To obtain experimental results for other synthesizers, see OtherSynthesizers.md.
 

@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
 cd python/
+python3.6 MakeTrainTestData_PF.py TK
 python3.6 MakeTrainTensor.py PF TK
 cd ../cpp/
 ./PPMTF PF TK 200

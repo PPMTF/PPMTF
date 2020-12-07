@@ -4,7 +4,7 @@ CXXFLAGS	+= -isystem ./include
 CXXFLAGS	+= -MMD
 CC	= g++
 
-TARGET	=  PPITF PPMTF PPMTF_time SynData_PPITF SynData_PPMTF SynData_PPMTF_time PDTest_Trace PDTest_Trace_time SynData_SGD SynData_SGD_time EvalPPMTFError EvalPPITFError
+TARGET	=  PPITF PPMTF PPMTF_time SynData_PPITF SynData_PPMTF SynData_PPMTF_time PDTest_Trace PDTest_Trace_time SynData_SGD SynData_SGD_time
 
 all: $(TARGET)
 
@@ -13,10 +13,6 @@ t: EvalPPITFError
 
 t0: SynData_SGD.0
 	./$< PF TK 10 5
-
-EvalPPMTFError: EvalPPMTFError.o PPXTF.o common.o
-
-EvalPPITFError: EvalPPITFError.o PPXTF.o common.o
 
 PDTest_Trace: PDTest_Trace.o common.o
 
