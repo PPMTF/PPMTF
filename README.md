@@ -30,6 +30,7 @@ We also designed our code to reproduce experimental results of PPMTF (alpha=200)
 - NOTICE.txt		&emsp;Copyright information.
 - OtherSynthesizers.md	&emsp;Usage of other synthesizers.
 - README.md		&emsp;This file.
+- run_PPMTF_PF.sh	&emsp;Shell script to synthesize traces in PF using PPMTF.
 
 # Running Our Code Using Docker Files
 
