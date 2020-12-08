@@ -1121,7 +1121,8 @@ for i in range(M):
 SynTraceFileLst = glob.glob(SynTraceFileAst)
 
 f = open(ResFile, "w")
-print("tracedir, tracefile, reid_rate, MIA_max_acc, MIA_max_adv, -, TP-TV_syn, TP-MSE_syn, TP-JS_syn, TP-TV_tra, TP-MSE_tra, TP-JS_tra, TP-TV_uni, TP-MSE_uni, TP-JS_uni, -, TP-TV-Top50_syn, TP-MSE-Top50_syn, TP-JS-Top50_syn, TP-TV-Top50_tra, TP-MSE-Top50_tra, TP-JS-Top50_tra, TP-TV-Top50_uni, TP-MSE-Top50_uni, TP-JS-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni, -, CP-TV_syn, CP-MSE_syn, CP-JS_syn, CP-TV_uni, CP-MSE_uni, CP-JS_uni", file=f)
+#print("tracedir, tracefile, reid_rate, MIA_acc, MIA_adv, -, TP-TV_syn, TP-MSE_syn, TP-JS_syn, TP-TV_tra, TP-MSE_tra, TP-JS_tra, TP-TV_uni, TP-MSE_uni, TP-JS_uni, -, TP-TV-Top50_syn, TP-MSE-Top50_syn, TP-JS-Top50_syn, TP-TV-Top50_tra, TP-MSE-Top50_tra, TP-JS-Top50_tra, TP-TV-Top50_uni, TP-MSE-Top50_uni, TP-JS-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni, -, CP-TV_syn, CP-MSE_syn, CP-JS_syn, CP-TV_uni, CP-MSE_uni, CP-JS_uni", file=f)
+print("tracedir, tracefile, reid_rate, MIA_acc, MIA_adv, -, TP-TV_syn, TP-TV_tra, TP-TV_uni, -, TP-TV-Top50_syn, TP-TV-Top50_tra, TP-TV-Top50_uni, -, VF-TV_syn, VF-TV_tra, VF-TV_uni, -, TM-EMD-Y_syn, TM-EMD-X_syn, TM-EMD-Y_tra, TM-EMD-X_tra, TM-EMD-Y_uni, TM-EMD-X_uni", file=f)
 
 ######################### Utiility of the benchmark  ##########################
 ################### Time-specific Geo-distribution ####################
@@ -1234,6 +1235,8 @@ for SynTraceFile in SynTraceFileLst:
 #        f2.close()
     else:
         reid_rate = 0
+        MIA_max_acc = 0
+        MIA_max_adv = 0
 
     # Initialization
     tsyn_l1_loss_avg = 0
@@ -1329,19 +1332,29 @@ for SynTraceFile in SynTraceFileLst:
     # Output the results
     writer = csv.writer(f, lineterminator="\n")
     if DataSet == "PF":
+#        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
+#             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
+#             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+#             "-", "-", "-", "-", 
+#             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
+#             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]
         s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
-             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
-             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+             tsyn_l1_loss_avg/2.0, ttra_l1_loss/2.0, tuni_l1_loss/2.0, "-", 
+             tsynl_l1_loss_avg/2.0, ttral_l1_loss/2.0, tunil_l1_loss/2.0, "-", 
              "-", "-", "-", "-", 
-             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
-             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]
+             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x]
     else:
-        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
-             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
-             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+#        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], reid_rate, MIA_max_acc, MIA_max_adv, "-", 
+#             tsyn_l1_loss_avg/2.0, tsyn_l2_loss_avg, tsyn_js_avg, ttra_l1_loss/2.0, ttra_l2_loss, ttra_js, tuni_l1_loss/2.0, tuni_l2_loss, tuni_js, "-", 
+#             tsynl_l1_loss_avg/2.0, tsynl_l2_loss_avg, tsynl_js_avg, ttral_l1_loss/2.0, ttral_l2_loss, ttral_js, tunil_l1_loss/2.0, tunil_l2_loss, tunil_js, "-", 
+#             vsyn_l1_avg/2.0, vtra_l1/2.0, vuni_l1/2.0, "-", 
+#             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
+#             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]            
+        s = [os.path.split(SynTraceFile)[0].split("/")[-1], os.path.split(SynTraceFile)[1], "-", "-", "-", "-", 
+             tsyn_l1_loss_avg/2.0, ttra_l1_loss/2.0, tuni_l1_loss/2.0, "-", 
+             tsynl_l1_loss_avg/2.0, ttral_l1_loss/2.0, tunil_l1_loss/2.0, "-", 
              vsyn_l1_avg/2.0, vtra_l1/2.0, vuni_l1/2.0, "-", 
-             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x, "-", 
-             ksyn_l1_loss_max/2.0, ksyn_l2_loss_max, ksyn_js_max, kuni_l1_loss_max/2.0, kuni_l2_loss_max, kuni_js_max, "-"]            
+             asyn_trans_emd_y_avg, asyn_trans_emd_x_avg, atra_trans_emd_y, atra_trans_emd_x, auni_trans_emd_y, auni_trans_emd_x]            
     writer.writerow(s)
 
 f.close()
