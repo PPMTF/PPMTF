@@ -36,7 +36,7 @@ We also designed our code to reproduce experimental results of PPMTF (alpha=200)
 
 You can easily build and run our code using Docker files as follows.
 
-1. Install [docker](https://docs.docker.com/get-docker/) & [docker-compose](https://docs.docker.jp/compose/install.html).
+1. Install [docker](https://docs.docker.com/get-docker/) & [docker-compose](https://docs.docker.com/compose/install/).
 
 2. Clone this repository.
 ```
