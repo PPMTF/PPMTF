@@ -30,7 +30,7 @@ import os
 #sys.argv = ["EvalUtilPriv.py", "FS", "KL", "SGD", 1]
 #sys.argv = ["EvalUtilPriv.py", "FS", "NY", "SGD", 1]
 #sys.argv = ["EvalUtilPriv.py", "FS", "TK", "SGD", 1]
-sys.argv = ["EvalUtilPriv.py", "FS", "SP", "SGD", 1]
+#sys.argv = ["EvalUtilPriv.py", "FS", "SP", "SGD", 1]
 
 if len(sys.argv) < 4:
     print("Usage:",sys.argv[0],"[Dataset] [City] [SynAlg (PPMTF/PPITF/SGD/SGLT)] ([TraceNum (default:10)] [ItrNum (default:100)] [PDTest (default:1)] [Reqk (default:10)])")
