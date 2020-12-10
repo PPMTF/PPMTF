@@ -11,7 +11,7 @@ PPMTF is implemented with C++ (data preprocessing and evaluation are implemented
 
 The purpose of this source code is to reproduce experimental results of PPMTF in PF (SNS-based people flow data) and FS (Foursquare dataset). In particular, we designed our code to easily reproduce experimental results of PPMTF (alpha=200) in PF (Figure 7 "PPMTF" in our paper) using Docker files. See **Running Our Code Using Dockerfiles** for details. 
 
-We also designed our code to reproduce experimental results of PPMTF (alpha=200) in FS (Figure 10 "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See **Usage (4)(5)** for details.
+We also designed our code to reproduce experimental results of PPMTF (alpha=200) in FS (Figure 10 (right) "PPMTF" in our paper) by downloading the Foursquare dataset and running our code. Note that it takes a lot of time (e.g., it may take more than one day depending on the running environment) to run our code. See **Usage (4)(5)** for details.
 
 # Directory Structure
 - cpp/			&emsp;C++ codes (put the required files under this directory; see cpp/README.md).
@@ -176,7 +176,7 @@ Then experimental results of PPMTF (utilpriv_PPMTF_NY.csv) will be output in dat
 
 Synthesized traces in other cities (IST/JK/KL/SP/TKY) can also be generated and evaluated by replacing NY with IS, JK, KL, SP, or TK.
 
-We plotted Figure 10 "PPMTF" in our paper using these files. See "results/FS/utilpriv.xlsx" for details.
+We plotted Figure 10 (right) "PPMTF" in our paper using these files. See "results/FS/utilpriv.xlsx" for details.
 
 **(6) Experimental Results for Other Synthesizers**
 
