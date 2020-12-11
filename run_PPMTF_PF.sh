@@ -1,6 +1,8 @@
 #!/bin/bash -x
 
-cd python/
+cd data/PF/
+tar -zxvf traces_TK.tar.gz
+cd ../../python/
 python3.6 MakeTrainTestData_PF.py TK
 python3.6 MakeTrainTensor.py PF TK
 cd ../cpp/

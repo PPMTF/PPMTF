@@ -26,7 +26,7 @@ Directory Structure is as follows (TK: Tokyo, alp200: alpha=200, mnt100: maximum
 - POI_TK.csv				&emsp;POI file.
 - POIindex_TK.csv			&emsp;POI index file.
 - testtraces_TK.csv			&emsp;Testing trace file.
-- traces_TK.tar.gz			&emsp;(Compressed) trace file.
+- traces_TK.tar.gz			&emsp;Compressed Trace file (uncompressed file is: traces_TK.csv).
 - traintraces_TK.csv			&emsp;Training trace file.
 - traintranstensor_TK_mnt100.csv	&emsp;Training transition-count tensor file.
 - trainvisittensor_TK_mnt100.csv	&emsp;Training visit-count tensor file.
