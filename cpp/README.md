@@ -1,5 +1,6 @@
 # Directory Structure
 - include/		&emsp;Include directory.
+  - install_dependencies.sh			&emsp;Shell script to install all libraries (StatsLib/GCEM/Eigen).
 - common.cpp		&emsp;Common C++ code.
 - common.hpp		&emsp;Common C++ header.
 - Makefile		&emsp;Makefile.
@@ -27,7 +28,11 @@
   * http://eigen.tuxfamily.org/index.php?title=Main_Page
 
 # Setup
-Please put the following files/directories under 'include/'.
+Please put the following files/directories under 'include/'. You can easily do this by running include/install_dependencies.sh:
+```
+$ cd include
+$ sh install_dependencies.sh
+```
 
 **Eigen 3.3.7**
 - Eigen/
