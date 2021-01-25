@@ -28,11 +28,7 @@
   * http://eigen.tuxfamily.org/index.php?title=Main_Page
 
 # Setup
-Please put the following files/directories under 'include/'. You can easily do this by running include/install_dependencies.sh:
-```
-$ cd include
-$ sh install_dependencies.sh
-```
+Please put the following files/directories under 'include/'.
 
 **Eigen 3.3.7**
 - Eigen/
@@ -44,3 +40,9 @@ $ sh install_dependencies.sh
 **StatsLib**
 - stats.hpp
 - stats_incl/
+
+You can easily put them by running include/install_dependencies.sh:
+```
+$ cd include
+$ sh install_dependencies.sh
+```
