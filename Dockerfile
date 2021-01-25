@@ -27,7 +27,7 @@ RUN cd /opt/ && \
 # install cpp libraries
 
 
-## install Stats 3.3.1
+## install Stats 3.1.1
 RUN wget https://github.com/kthohr/stats/archive/v3.1.1.tar.gz && \
     tar -xvf ./v3.1.1.tar.gz && \
     cp -r ./stats-3.1.1/include/* /opt/PPMTF/cpp/include/
