@@ -1,7 +1,7 @@
 # PPMTF
 This is a source code of PPMTF (Privacy-Preserving Multiple Tensor Factorization) in the following paper: 
 
-Takao Murakami, Koki Hamada, Yusuke Kawamoto, Takuma Hatano, "Privacy-Preserving Multiple Tensor Factorization for Synthesizing Large-Scale Location Traces with Cluster-Specific Features," Proceedings on Privacy Enhancing Technologies (PoPETs), Issue 2, 2021 (to appear).
+Takao Murakami, Koki Hamada, Yusuke Kawamoto, Takuma Hatano, "Privacy-Preserving Multiple Tensor Factorization for Synthesizing Large-Scale Location Traces with Cluster-Specific Features," Proceedings on Privacy Enhancing Technologies (PoPETs), Issue 2, pp.5-26, 2021.
 
 Full paper: https://arxiv.org/abs/1911.04226
 
